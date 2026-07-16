@@ -1,0 +1,1927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FLASHPOINT: Automated Security Response Platform</title>
+    <!-- Tailwind CSS for modern interface styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .cyber-bg {
+            background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
+        }
+        @keyframes pulse-blue {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
+            50% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
+        }
+        .pulse-btn {
+            animation: pulse-blue 2s infinite;
+        }
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            border: 2px solid #334155;
+            border-radius: 12px;
+            max-width: 600px;
+            width: 90%;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="cyber-bg text-slate-100 min-h-screen font-mono p-4">
+
+    <!-- Top Header -->
+    <header class="border-b border-slate-800 pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        <div>
+            <h1 class="text-xl font-bold tracking-wider text-cyan-400">FLASHPOINT // v2.0.0</h1>
+            <div class="text-xs text-slate-400 mt-1">Automated Security Response in Action</div>
+        </div>
+        <div class="text-right">
+            <div class="text-xs text-slate-500">SIMULATION CLOCK</div>
+            <div id="sim-clock" class="text-2xl font-black text-amber-400 tracking-widest">00:00:00</div>
+        </div>
+    </header>
+
+    <!-- Floating Toggle Button (Hidden by default) -->
+    <button id="floating-toggle-btn" onclick="toggleFacilitatorPanel()" class="hidden fixed top-6 left-64 z-50 bg-slate-800/90 hover:bg-pink-600 border-2 border-pink-500/50 hover:border-pink-400 text-pink-500 hover:text-white font-bold w-8 h-8 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center" title="Show facilitator controls">
+        <span class="text-xs">⚙</span>
+    </button>
+
+    <!-- Main Workspace Split -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- ========================================== -->
+        <!-- LEFT: FACILITATOR CONTROLS (THE PUPPET MASTER) -->
+        <!-- ========================================== -->
+        <section id="facilitator-panel" class="lg:col-span-4 bg-slate-900/60 border border-slate-800 rounded-xl p-4 shadow-xl space-y-6 transition-all duration-300">
+            <div>
+                <div class="flex justify-between items-center mb-4 border-b border-pink-500/20 pb-2">
+                    <h2 class="text-xs font-bold uppercase tracking-widest text-pink-500">
+                        ⚙️ Facilitator Controls
+                    </h2>
+                    <button id="toggle-panel-btn" onclick="toggleFacilitatorPanel()" class="text-pink-500 hover:text-pink-400 transition" title="Collapse panel">
+                        ◀
+                    </button>
+                </div>
+                
+                <!-- Simulation Control Buttons -->
+                <div class="mb-4">
+                    <label class="text-xs text-slate-400 block mb-2">Sim Clock Controls</label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-start" onclick="toggleClock()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-3 rounded text-xs transition">
+                            ▶ Start Simulation
+                        </button>
+                        <button onclick="resetSim()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2 px-3 rounded text-xs transition">
+                            🔄 Reset All
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Manual System Status Overrides -->
+            <div class="bg-slate-950/80 p-3 rounded-lg border border-slate-800 space-y-3">
+                <label class="text-xs text-slate-400 block font-bold">Package Deployment Status</label>
+
+                <!-- Package Manager Controls -->
+                <div>
+                    <label class="text-[10px] text-slate-500 block">PACKAGE MANAGER MANIFEST STATE</label>
+                    <select id="ctrl-package-version" onchange="updateInfrastructure()" class="w-full bg-slate-900 border border-slate-700 text-xs p-1.5 rounded text-orange-400 focus:outline-none">
+                        <option value="VULNERABLE">Using vulnerable library (lib-crypto-core v2.4.1-rc1)</option>
+                        <option value="PATCHED">Manifest bumped to Lightwell repository (v2.4.1-lw)</option>
+                    </select>
+
+                    <!-- Interactive Pipeline Trigger Button -->
+                    <button id="btn-cicd" onclick="executeDeployAgent()" class="w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-2 rounded text-xs tracking-wider transition pulse-btn hidden">
+                        🚀 Start CI/CD pipeline
+                    </button>
+
+                    <!-- Remediation Check Button (appears after SBOM shows vulnerable) -->
+                    <button id="btn-remediation" onclick="initiateRemediation()" class="w-full mt-3 bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-2 rounded text-xs tracking-wider transition pulse-btn hidden">
+                        🔍 Check Lightwell for remediation options
+                    </button>
+
+                    <!-- Ansible Patch Button (appears after system audit) -->
+                    <button id="btn-ansible" onclick="executeAnsiblePatch()" class="w-full mt-3 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-2 rounded text-xs tracking-wider transition pulse-btn hidden">
+                        🤖 Use Ansible to Patch Servers
+                    </button>
+                </div>
+            </div>
+
+            <!-- Manual Use Case Triggers -->
+            <div>
+                <label class="text-xs text-slate-400 block mb-2 font-bold">Use Cases</label>
+                <div class="space-y-2">
+                    <button id="inj-btn-1" onclick="triggerInject(1)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-amber-500 p-2 rounded text-xs transition">
+                        <div id="inj-title-1" class="font-bold text-amber-400">Use Case #1: Supply Chain Threat</div>
+                        <p id="inj-desc-1" class="text-[10px] text-slate-400 truncate">Frontier model flags CVE-2026-1234 in lib-crypto-core v2.4.1-rc1.</p>
+                    </button>
+                    <button id="inj-btn-2" onclick="triggerInject(2)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-rose-600 p-2 rounded text-xs transition">
+                        <div id="inj-title-2" class="font-bold text-rose-500">Use Case #2: Compliance & Media Pressure</div>
+                        <p id="inj-desc-2" class="text-[10px] text-slate-400 truncate">Auditors demand SBOM proof; tech media requesting statement.</p>
+                    </button>
+                    <button id="inj-btn-3" onclick="triggerInject(3)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-purple-600 p-2 rounded text-xs transition">
+                        <div id="inj-title-3" class="font-bold text-purple-400">Use Case #3: Infrastructure Audit</div>
+                        <p id="inj-desc-3" class="text-[10px] text-slate-400 truncate">Ansible audit of 25 RHEL servers for compliance and vulnerabilities.</p>
+                    </button>
+                    <button id="inj-btn-4" onclick="triggerInject(4)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-orange-600 p-2 rounded text-xs transition">
+                        <div id="inj-title-4" class="font-bold text-orange-400">Use Case #4: Secret Sprawl Detection</div>
+                        <p id="inj-desc-4" class="text-[10px] text-slate-400 truncate">Hard-coded credentials discovered in source code commits.</p>
+                    </button>
+                    <button id="inj-btn-5" onclick="triggerInject(5)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-blue-600 p-2 rounded text-xs transition">
+                        <div id="inj-title-5" class="font-bold text-blue-400">Use Case #5: Certificate Expiration</div>
+                        <p id="inj-desc-5" class="text-[10px] text-slate-400 truncate">SSL/TLS certificate expiring in 24 hours - automated renewal.</p>
+                    </button>
+                    <button id="inj-btn-6" onclick="triggerInject(6)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-teal-600 p-2 rounded text-xs transition">
+                        <div id="inj-title-6" class="font-bold text-teal-400">Use Case #6: Cloud Misconfiguration</div>
+                        <p id="inj-desc-6" class="text-[10px] text-slate-400 truncate">Public S3 bucket detected with sensitive data exposure.</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Comparison Mode Toggle -->
+            <div>
+                <button id="btn-comparison" onclick="toggleComparisonMode()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-2 px-3 rounded text-xs transition">
+                    📊 Enable Comparison Mode
+                </button>
+            </div>
+
+            <!-- Incident Status Badge -->
+            <div class="bg-slate-950/80 p-4 rounded-lg border border-slate-800">
+                <label class="text-xs text-slate-400 block mb-3 font-bold uppercase tracking-wider">Incident Status</label>
+                <div class="text-center">
+                    <div id="status-icon" class="text-4xl mb-2">⚪</div>
+                    <div id="status-text" class="text-lg font-black text-slate-500 tracking-wider mb-1">IDLE</div>
+                    <div id="status-desc" class="text-[10px] text-slate-600">No active incidents</div>
+                </div>
+
+                <!-- Time to Remediation Counter -->
+                <div class="mt-4 pt-4 border-t border-slate-800">
+                    <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Time to Remediation</div>
+                    <div id="remediation-timer" class="text-2xl font-black text-slate-600 font-mono tracking-wider">--:--</div>
+                    <div id="remediation-status" class="text-[9px] text-slate-700 mt-1">Not started</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ========================================== -->
+        <!-- RIGHT: THE WAR ROOM VIEW (PROJECTED DESIGN) -->
+        <!-- ========================================== -->
+        <main id="main-content" class="lg:col-span-8 space-y-6 transition-all duration-300">
+            
+            <!-- Real-time Health Dashboard Metrics -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
+                    <div class="text-xs text-slate-400 uppercase tracking-wider">System Stability</div>
+                    <div id="stat-health" class="text-3xl font-black text-emerald-400 mt-1">100%</div>
+                    <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div id="bar-health" class="bg-emerald-400 h-full transition-all duration-500" style="width: 100%"></div>
+                    </div>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
+                    <div class="text-xs text-slate-400 uppercase tracking-wider">Liability Risk</div>
+                    <div id="stat-reg" class="text-3xl font-black text-slate-500 mt-1">0%</div>
+                    <div class="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                        <div id="bar-reg" class="bg-amber-500 h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+                <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
+                    <div class="text-xs text-slate-400 uppercase tracking-wider">Compliance Risk Status</div>
+                    <div id="stat-pr" class="text-3xl font-black text-emerald-400 mt-1">GREEN</div>
+                    <div class="text-[10px] text-slate-500 mt-1">Low risk - No active threats</div>
+                </div>
+            </div>
+
+            <!-- Visual Timeline / Progress Indicator -->
+            <div id="timeline-panel" class="bg-slate-900/40 border border-slate-800 rounded-xl p-4 hidden">
+                <h3 id="pipeline-title" class="text-xs font-bold tracking-widest text-cyan-400 mb-4 uppercase">
+                    Automated Response Pipeline
+                </h3>
+                <div id="timeline-app" class="relative">
+                    <!-- Timeline Container -->
+                    <div class="flex items-center justify-between">
+                        <!-- Stage 1: CVE Detection -->
+                        <div class="flex-1 text-center">
+                            <div id="stage-1" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                1
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">CVE<br>Detection</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="connector-1" class="h-full bg-cyan-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 2: API Check -->
+                        <div class="flex-1 text-center">
+                            <div id="stage-2" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                2
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">API<br>Check</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="connector-2" class="h-full bg-cyan-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 3: Patch Found -->
+                        <div class="flex-1 text-center">
+                            <div id="stage-3" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                3
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Patch<br>Found</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="connector-3" class="h-full bg-cyan-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 4: Build -->
+                        <div class="flex-1 text-center">
+                            <div id="stage-4" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                4
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Build</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="connector-4" class="h-full bg-cyan-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 5: Deploy -->
+                        <div class="flex-1 text-center">
+                            <div id="stage-5" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                5
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Deploy</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="connector-5" class="h-full bg-cyan-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 6: Verified -->
+                        <div class="flex-1 text-center">
+                            <div id="stage-6" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                6
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Verified</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secret Rotation Timeline (Hidden by default) -->
+                <div id="timeline-secret" class="relative hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 text-center">
+                            <div id="secret-stage-1" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">1</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Secret<br>Detection</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="secret-connector-1" class="h-full bg-orange-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="secret-stage-2" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">2</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Vault<br>Connect</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="secret-connector-2" class="h-full bg-orange-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="secret-stage-3" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">3</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Rotate<br>Creds</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="secret-connector-3" class="h-full bg-orange-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="secret-stage-4" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">4</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Notify<br>Services</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="secret-connector-4" class="h-full bg-orange-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="secret-stage-5" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">5</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Git<br>Cleanup</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="secret-connector-5" class="h-full bg-orange-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="secret-stage-6" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">6</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Verify</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Certificate Timeline (Hidden by default) -->
+                <div id="timeline-cert" class="relative hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 text-center">
+                            <div id="cert-stage-1" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">1</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Expiry<br>Detect</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cert-connector-1" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cert-stage-2" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">2</div>
+                            <div class="text-[10px] text-slate-500 mt-2">ACME<br>Request</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cert-connector-2" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cert-stage-3" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">3</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Cert<br>Issued</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cert-connector-3" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cert-stage-4" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">4</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Deploy<br>LBs</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cert-connector-4" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cert-stage-5" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">5</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Test<br>Endpoints</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cert-connector-5" class="h-full bg-blue-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cert-stage-6" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">6</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Verify</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cloud Remediation Timeline (Hidden by default) -->
+                <div id="timeline-cloud" class="relative hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 text-center">
+                            <div id="cloud-stage-1" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">1</div>
+                            <div class="text-[10px] text-slate-500 mt-2">CSPM<br>Detect</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cloud-connector-1" class="h-full bg-teal-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cloud-stage-2" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">2</div>
+                            <div class="text-[10px] text-slate-500 mt-2">ACL<br>Analysis</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cloud-connector-2" class="h-full bg-teal-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cloud-stage-3" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">3</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Block<br>Public</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cloud-connector-3" class="h-full bg-teal-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cloud-stage-4" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">4</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Data<br>Classify</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cloud-connector-4" class="h-full bg-teal-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cloud-stage-5" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">5</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Scan<br>Similar</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="cloud-connector-5" class="h-full bg-teal-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="cloud-stage-6" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">6</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Policy<br>Deploy</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ansible Timeline (Hidden by default) -->
+                <div id="timeline-ansible" class="relative hidden">
+                    <!-- Timeline Container -->
+                    <div class="flex items-center justify-between">
+                        <!-- Stage 1: Inventory -->
+                        <div class="flex-1 text-center">
+                            <div id="ansible-stage-1" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                1
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Inventory<br>Scan</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ansible-connector-1" class="h-full bg-purple-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 2: Access Control -->
+                        <div class="flex-1 text-center">
+                            <div id="ansible-stage-2" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                2
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Access<br>Control</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ansible-connector-2" class="h-full bg-purple-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 3: Vulnerability Scan -->
+                        <div class="flex-1 text-center">
+                            <div id="ansible-stage-3" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                3
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Vuln<br>Scan</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ansible-connector-3" class="h-full bg-purple-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 4: Drift Detection -->
+                        <div class="flex-1 text-center">
+                            <div id="ansible-stage-4" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                4
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Drift<br>Check</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ansible-connector-4" class="h-full bg-purple-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 5: Patch Servers -->
+                        <div class="flex-1 text-center">
+                            <div id="ansible-stage-5" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                5
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Patch</div>
+                        </div>
+
+                        <!-- Connector -->
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ansible-connector-5" class="h-full bg-purple-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+
+                        <!-- Stage 6: Verify -->
+                        <div class="flex-1 text-center">
+                            <div id="ansible-stage-6" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">
+                                6
+                            </div>
+                            <div class="text-[10px] text-slate-500 mt-2">Verify</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Comparison Mode Panel (Hidden by default) -->
+                <div id="comparison-panel" class="mt-6 pt-6 border-t border-slate-800 hidden">
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Automated Column -->
+                        <div>
+                            <h4 class="text-xs font-bold text-emerald-400 mb-3">🤖 AUTOMATED RESPONSE</h4>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span class="text-slate-400">CVE Detection:</span><span class="text-emerald-400 font-bold">Instant</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Lightwell API Check:</span><span class="text-emerald-400 font-bold">~2 seconds</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Patch Verification:</span><span class="text-emerald-400 font-bold">~3 seconds</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Build & Test:</span><span class="text-emerald-400 font-bold">~6 seconds</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Blue/Green Deploy:</span><span class="text-emerald-400 font-bold">~8 seconds</span></div>
+                                <div class="flex justify-between border-t border-slate-800 pt-2 mt-2"><span class="text-slate-300 font-bold">Total Time:</span><span class="text-emerald-400 font-bold text-lg">~19 seconds</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Manual Column -->
+                        <div>
+                            <h4 class="text-xs font-bold text-rose-400 mb-3">👤 MANUAL RESPONSE</h4>
+                            <div class="space-y-2 text-xs">
+                                <div class="flex justify-between"><span class="text-slate-400">CVE Discovery:</span><span class="text-rose-400 font-bold">2-4 hours</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Source Patch Research:</span><span class="text-rose-400 font-bold">1-2 hours</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Testing & Approval:</span><span class="text-rose-400 font-bold">4-8 hours</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Manual Build:</span><span class="text-rose-400 font-bold">30-60 min</span></div>
+                                <div class="flex justify-between"><span class="text-slate-400">Deployment Window:</span><span class="text-rose-400 font-bold">2-4 hours</span></div>
+                                <div class="flex justify-between border-t border-slate-800 pt-2 mt-2"><span class="text-slate-300 font-bold">Total Time:</span><span class="text-rose-400 font-bold text-lg">10-18 hours</span></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Impact Summary -->
+                    <div class="mt-4 p-3 bg-cyan-950/30 border border-cyan-800/40 rounded-lg">
+                        <div class="text-xs text-cyan-300 font-bold mb-1">⚡ Speed Advantage</div>
+                        <div class="text-[11px] text-slate-300">Automation delivers patched, verified code <span class="text-cyan-400 font-bold">1,890x - 3,400x faster</span> than manual processes, minimizing exposure window from hours to seconds.</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Communications Inbox -->
+            <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
+                <h3 class="text-xs font-bold tracking-widest text-cyan-400 mb-3 uppercase flex items-center">
+                    <span class="inline-block w-2 h-2 rounded-full bg-cyan-400 animate-ping mr-2"></span>
+                    Incoming Crisis Intelligence Stream
+                </h3>
+                <div id="comms-feed" class="space-y-3 max-h-[220px] overflow-y-auto pr-1">
+                    <div class="text-xs text-slate-500 text-center py-8">Waiting for simulation baseline to initiate...</div>
+                </div>
+            </div>
+
+            <!-- Terminal Console Logs System -->
+            <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 shadow-inner">
+                <div class="flex justify-between items-center mb-2 border-b border-slate-900 pb-2">
+                    <div class="text-xs uppercase font-bold text-slate-400 tracking-widest">Live SIEM / Infrastructure Logs</div>
+                    <div class="text-[10px] text-slate-600">SYS_CONSOLE_FEED</div>
+                </div>
+                <div id="terminal-log" class="text-xs text-emerald-500 space-y-1 h-64 overflow-y-auto font-mono bg-black/40 p-3 rounded border border-slate-900/60">
+                    <div>[00:00:00] SYSTEM: Infrastructure running nominal. Scanning pipelines quiet.</div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Use Case Dialog Modal -->
+    <div id="use-case-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="p-6">
+                <div class="flex items-center gap-3 mb-4">
+                    <div id="modal-icon" class="text-4xl">📦</div>
+                    <div>
+                        <h2 id="modal-title" class="text-xl font-bold text-cyan-400">Use Case #1: Supply Chain Threat</h2>
+                        <div id="modal-subtitle" class="text-xs text-slate-400 mt-1">CVE-2026-1234 Detection & Remediation</div>
+                    </div>
+                </div>
+
+                <div class="bg-slate-900/60 border border-slate-700 rounded-lg p-4 mb-4">
+                    <h3 class="text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">Scenario Overview</h3>
+                    <p id="modal-description" class="text-sm text-slate-300 leading-relaxed mb-3">
+                        A critical vulnerability (CVE-2026-1234) has been discovered in the lib-crypto-core package v2.4.1-rc1 currently deployed in production. The automated security workflow will detect, verify, patch, and deploy a secure version from the Lightwell repository.
+                    </p>
+                    <div class="text-xs text-slate-500">
+                        <strong class="text-slate-400">Demonstrates:</strong> Automated CVE detection, Lightwell API integration, CI/CD pipeline deployment, blue/green testing
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button id="modal-cancel-btn" class="flex-1 bg-slate-700 hover:bg-slate-600 text-slate-200 font-bold py-3 px-4 rounded text-sm transition">
+                        Cancel
+                    </button>
+                    <button id="modal-start-btn" class="flex-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-6 rounded text-sm transition">
+                        ▶ Start Remediation Workflow
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Core Simulation Engine Logic -->
+    <script>
+        let currentScenario = 'oss_dependency';
+        let simActive = false;
+        let timeElapsedSeconds = 0;
+        let timerInterval = null;
+        let activeInjects = [];
+
+        // Operational Environment State Trackers
+        let infrastructure = {
+            packageState: 'VULNERABLE',
+            patchDeployed: false
+        };
+
+        const clockEl = document.getElementById('sim-clock');
+        const btnStart = document.getElementById('btn-start');
+        const commsFeed = document.getElementById('comms-feed');
+        const terminalLog = document.getElementById('terminal-log');
+        const selectorEl = document.getElementById('scenario-selector');
+        const btnCicd = document.getElementById('btn-cicd');
+        const btnRemediation = document.getElementById('btn-remediation');
+        const btnAnsible = document.getElementById('btn-ansible');
+
+        // Modal button event listeners
+        document.getElementById('modal-cancel-btn').addEventListener('click', closeUseCaseModal);
+        document.getElementById('modal-start-btn').addEventListener('click', startUseCaseRemediation);
+
+        let comparisonMode = false;
+        let serversAudited = false;
+        let remediationStartTime = null;
+        let remediationTimerInterval = null;
+        let pendingUseCase = null;
+
+        // Remote command polling for secret triggering (supports both localStorage and API)
+        setInterval(() => {
+            // Check localStorage first (for trigger.html compatibility)
+            const localCommand = localStorage.getItem('war-game-command');
+            if (localCommand) {
+                localStorage.removeItem('war-game-command');
+                executeRemoteCommand(localCommand);
+            }
+
+            // Check API endpoint
+            fetch('/war-game/api.php')
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success' && data.command) {
+                        executeRemoteCommand(data.command);
+                    }
+                })
+                .catch(err => {
+                    // Silently ignore API errors
+                    console.error('API polling error:', err);
+                });
+        }, 500);
+
+        function executeRemoteCommand(cmd) {
+            console.log('Executing remote command:', cmd);
+            const parts = cmd.split(':');
+            const action = parts[0];
+
+            switch(action) {
+                case 'trigger':
+                    const useCaseId = parseInt(parts[1]);
+                    if (useCaseId >= 1 && useCaseId <= 6) {
+                        triggerInject(useCaseId);
+                    }
+                    break;
+                case 'start':
+                    if (!simActive) toggleClock();
+                    break;
+                case 'pause':
+                    if (simActive) toggleClock();
+                    break;
+                case 'reset':
+                    resetSim();
+                    break;
+                case 'cicd':
+                    if (!btnCicd.classList.contains('hidden')) {
+                        executeDeployAgent();
+                    }
+                    break;
+                case 'remediation':
+                    if (!btnRemediation.classList.contains('hidden')) {
+                        initiateRemediation();
+                    }
+                    break;
+                case 'ansible':
+                    if (!btnAnsible.classList.contains('hidden')) {
+                        executeAnsiblePatch();
+                    }
+                    break;
+                case 'comparison':
+                    toggleComparisonMode();
+                    break;
+            }
+        }
+
+        function switchScenario() {
+            // Scenario switching disabled - only OSS dependency scenario available
+            resetSim();
+        }
+
+        function toggleComparisonMode() {
+            comparisonMode = !comparisonMode;
+            const panel = document.getElementById('comparison-panel');
+            const btn = document.getElementById('btn-comparison');
+
+            if (comparisonMode) {
+                panel.classList.remove('hidden');
+                btn.innerText = '📊 Disable Comparison Mode';
+                btn.classList.replace('bg-slate-800', 'bg-cyan-700');
+            } else {
+                panel.classList.add('hidden');
+                btn.innerText = '📊 Enable Comparison Mode';
+                btn.classList.replace('bg-cyan-700', 'bg-slate-800');
+            }
+        }
+
+        let facilitatorPanelVisible = true;
+
+        function toggleFacilitatorPanel() {
+            facilitatorPanelVisible = !facilitatorPanelVisible;
+            const panel = document.getElementById('facilitator-panel');
+            const mainContent = document.getElementById('main-content');
+            const floatingBtn = document.getElementById('floating-toggle-btn');
+
+            if (facilitatorPanelVisible) {
+                // Show panel
+                panel.classList.remove('lg:col-span-0', 'hidden');
+                panel.classList.add('lg:col-span-4');
+                mainContent.classList.remove('lg:col-span-12');
+                mainContent.classList.add('lg:col-span-8');
+                floatingBtn.classList.add('hidden');
+            } else {
+                // Hide panel
+                panel.classList.remove('lg:col-span-4');
+                panel.classList.add('lg:col-span-0', 'hidden');
+                mainContent.classList.remove('lg:col-span-8');
+                mainContent.classList.add('lg:col-span-12');
+                floatingBtn.classList.remove('hidden');
+            }
+        }
+
+        function updateTimelineStage(stage) {
+            const stageEl = document.getElementById(`stage-${stage}`);
+            stageEl.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-600');
+            stageEl.classList.add('bg-cyan-600', 'border-cyan-400', 'text-white');
+            stageEl.innerHTML = '✓';
+
+            // Animate connector
+            if (stage < 6) {
+                setTimeout(() => {
+                    const connector = document.getElementById(`connector-${stage}`);
+                    connector.style.width = '100%';
+                }, 300);
+            }
+        }
+
+        function resetTimeline() {
+            // Reset app timeline
+            for (let i = 1; i <= 6; i++) {
+                const stageEl = document.getElementById(`stage-${i}`);
+                stageEl.classList.remove('bg-cyan-600', 'border-cyan-400', 'text-white');
+                stageEl.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-600');
+                stageEl.innerHTML = i;
+
+                if (i < 6) {
+                    const connector = document.getElementById(`connector-${i}`);
+                    connector.style.width = '0%';
+                }
+            }
+
+            // Reset Ansible timeline
+            for (let i = 1; i <= 6; i++) {
+                const stageEl = document.getElementById(`ansible-stage-${i}`);
+                if (stageEl) {
+                    stageEl.classList.remove('bg-purple-600', 'border-purple-400', 'text-white');
+                    stageEl.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-600');
+                    stageEl.innerHTML = i;
+                }
+
+                if (i < 6) {
+                    const connector = document.getElementById(`ansible-connector-${i}`);
+                    if (connector) connector.style.width = '0%';
+                }
+            }
+
+            // Hide timeline panel on reset
+            document.getElementById('timeline-panel').classList.add('hidden');
+            document.getElementById('timeline-app').classList.remove('hidden');
+            document.getElementById('timeline-ansible').classList.add('hidden');
+            document.getElementById('pipeline-title').innerText = 'Automated Response Pipeline';
+            document.getElementById('pipeline-title').classList.remove('text-purple-400');
+            document.getElementById('pipeline-title').classList.add('text-cyan-400');
+        }
+
+        function updateAnsibleStage(stage) {
+            const stageEl = document.getElementById(`ansible-stage-${stage}`);
+            stageEl.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-600');
+            stageEl.classList.add('bg-purple-600', 'border-purple-400', 'text-white');
+            stageEl.innerHTML = '✓';
+
+            // Animate connector
+            if (stage < 6) {
+                setTimeout(() => {
+                    const connector = document.getElementById(`ansible-connector-${stage}`);
+                    connector.style.width = '100%';
+                }, 300);
+            }
+        }
+
+        function updateSecretStage(stage) {
+            const stageEl = document.getElementById(`secret-stage-${stage}`);
+            stageEl.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-600');
+            stageEl.classList.add('bg-orange-600', 'border-orange-400', 'text-white');
+            stageEl.innerHTML = '✓';
+            if (stage < 6) {
+                setTimeout(() => {
+                    document.getElementById(`secret-connector-${stage}`).style.width = '100%';
+                }, 300);
+            }
+        }
+
+        function updateCertStage(stage) {
+            const stageEl = document.getElementById(`cert-stage-${stage}`);
+            stageEl.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-600');
+            stageEl.classList.add('bg-blue-600', 'border-blue-400', 'text-white');
+            stageEl.innerHTML = '✓';
+            if (stage < 6) {
+                setTimeout(() => {
+                    document.getElementById(`cert-connector-${stage}`).style.width = '100%';
+                }, 300);
+            }
+        }
+
+        function updateCloudStage(stage) {
+            const stageEl = document.getElementById(`cloud-stage-${stage}`);
+            stageEl.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-600');
+            stageEl.classList.add('bg-teal-600', 'border-teal-400', 'text-white');
+            stageEl.innerHTML = '✓';
+            if (stage < 6) {
+                setTimeout(() => {
+                    document.getElementById(`cloud-connector-${stage}`).style.width = '100%';
+                }, 300);
+            }
+        }
+
+        function switchToAnsibleTimeline() {
+            hideAllTimelines();
+            document.getElementById('timeline-panel').classList.remove('hidden');
+            document.getElementById('timeline-ansible').classList.remove('hidden');
+            document.getElementById('pipeline-title').innerText = 'Ansible Automation Pipeline';
+            document.getElementById('pipeline-title').className = 'text-xs font-bold tracking-widest text-purple-400 mb-4 uppercase';
+        }
+
+        function switchToSecretTimeline() {
+            hideAllTimelines();
+            document.getElementById('timeline-panel').classList.remove('hidden');
+            document.getElementById('timeline-secret').classList.remove('hidden');
+            document.getElementById('pipeline-title').innerText = 'Secret Rotation Pipeline';
+            document.getElementById('pipeline-title').className = 'text-xs font-bold tracking-widest text-orange-400 mb-4 uppercase';
+        }
+
+        function switchToCertTimeline() {
+            hideAllTimelines();
+            document.getElementById('timeline-panel').classList.remove('hidden');
+            document.getElementById('timeline-cert').classList.remove('hidden');
+            document.getElementById('pipeline-title').innerText = 'Certificate Renewal Pipeline';
+            document.getElementById('pipeline-title').className = 'text-xs font-bold tracking-widest text-blue-400 mb-4 uppercase';
+        }
+
+        function switchToCloudTimeline() {
+            hideAllTimelines();
+            document.getElementById('timeline-panel').classList.remove('hidden');
+            document.getElementById('timeline-cloud').classList.remove('hidden');
+            document.getElementById('pipeline-title').innerText = 'Cloud Remediation Pipeline';
+            document.getElementById('pipeline-title').className = 'text-xs font-bold tracking-widest text-teal-400 mb-4 uppercase';
+        }
+
+        function hideAllTimelines() {
+            document.getElementById('timeline-app').classList.add('hidden');
+            document.getElementById('timeline-ansible').classList.add('hidden');
+            document.getElementById('timeline-secret').classList.add('hidden');
+            document.getElementById('timeline-cert').classList.add('hidden');
+            document.getElementById('timeline-cloud').classList.add('hidden');
+        }
+
+        function showAppTimeline() {
+            document.getElementById('timeline-panel').classList.remove('hidden');
+            document.getElementById('timeline-app').classList.remove('hidden');
+            document.getElementById('timeline-ansible').classList.add('hidden');
+            document.getElementById('pipeline-title').innerText = 'Automated Response Pipeline';
+            document.getElementById('pipeline-title').classList.remove('text-purple-400');
+            document.getElementById('pipeline-title').classList.add('text-cyan-400');
+        }
+
+        function updateIncidentStatus(status) {
+            const iconEl = document.getElementById('status-icon');
+            const textEl = document.getElementById('status-text');
+            const descEl = document.getElementById('status-desc');
+
+            switch(status) {
+                case 'IDLE':
+                    iconEl.innerText = '⚪';
+                    textEl.innerText = 'IDLE';
+                    textEl.className = 'text-lg font-black text-slate-500 tracking-wider mb-1';
+                    descEl.innerText = 'No active incidents';
+                    descEl.className = 'text-[10px] text-slate-600';
+                    break;
+                case 'DETECTING':
+                    iconEl.innerText = '🔍';
+                    textEl.innerText = 'DETECTING';
+                    textEl.className = 'text-lg font-black text-amber-500 tracking-wider mb-1';
+                    descEl.innerText = 'Vulnerability identified';
+                    descEl.className = 'text-[10px] text-amber-600';
+                    startRemediationTimer();
+                    break;
+                case 'RESPONDING':
+                    iconEl.innerText = '⚡';
+                    textEl.innerText = 'RESPONDING';
+                    textEl.className = 'text-lg font-black text-cyan-400 tracking-wider mb-1';
+                    descEl.innerText = 'Automated workflow active';
+                    descEl.className = 'text-[10px] text-cyan-500';
+                    break;
+                case 'DEPLOYING':
+                    iconEl.innerText = '🚀';
+                    textEl.innerText = 'DEPLOYING';
+                    textEl.className = 'text-lg font-black text-blue-500 tracking-wider mb-1';
+                    descEl.innerText = 'CI/CD pipeline running';
+                    descEl.className = 'text-[10px] text-blue-600';
+                    break;
+                case 'RESOLVED':
+                    iconEl.innerText = '✅';
+                    textEl.innerText = 'RESOLVED';
+                    textEl.className = 'text-lg font-black text-emerald-400 tracking-wider mb-1';
+                    descEl.innerText = 'Patch verified & deployed';
+                    descEl.className = 'text-[10px] text-emerald-600';
+                    stopRemediationTimer(true);
+                    break;
+                case 'COMPLIANCE':
+                    iconEl.innerText = '⚖️';
+                    textEl.innerText = 'AUDIT MODE';
+                    textEl.className = 'text-lg font-black text-rose-500 tracking-wider mb-1';
+                    descEl.innerText = 'Compliance inquiry active';
+                    descEl.className = 'text-[10px] text-rose-600';
+                    break;
+                case 'AUDITING':
+                    iconEl.innerText = '🔧';
+                    textEl.innerText = 'AUDITING';
+                    textEl.className = 'text-lg font-black text-purple-500 tracking-wider mb-1';
+                    descEl.innerText = 'Infrastructure audit in progress';
+                    descEl.className = 'text-[10px] text-purple-600';
+                    break;
+                case 'PATCHING':
+                    iconEl.innerText = '🤖';
+                    textEl.innerText = 'PATCHING';
+                    textEl.className = 'text-lg font-black text-purple-500 tracking-wider mb-1';
+                    descEl.innerText = 'Ansible automation running';
+                    descEl.className = 'text-[10px] text-purple-600';
+                    break;
+            }
+        }
+
+        function startRemediationTimer() {
+            if (remediationStartTime === null) {
+                remediationStartTime = Date.now();
+                updateRemediationDisplay();
+                remediationTimerInterval = setInterval(updateRemediationDisplay, 100);
+            }
+        }
+
+        function stopRemediationTimer(success) {
+            if (remediationTimerInterval) {
+                clearInterval(remediationTimerInterval);
+                remediationTimerInterval = null;
+            }
+            if (success && remediationStartTime !== null) {
+                updateRemediationDisplay();
+                const statusEl = document.getElementById('remediation-status');
+                statusEl.innerText = 'Remediation complete';
+                statusEl.className = 'text-[9px] text-emerald-600 mt-1 font-bold';
+            }
+        }
+
+        function updateRemediationDisplay() {
+            if (remediationStartTime === null) return;
+
+            const elapsed = Math.floor((Date.now() - remediationStartTime) / 1000);
+            const minutes = Math.floor(elapsed / 60);
+            const seconds = elapsed % 60;
+
+            const timerEl = document.getElementById('remediation-timer');
+            const statusEl = document.getElementById('remediation-status');
+
+            timerEl.innerText = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+            // Color based on elapsed time
+            if (elapsed < 30) {
+                timerEl.className = 'text-2xl font-black text-emerald-400 font-mono tracking-wider';
+                statusEl.innerText = 'Excellent response time';
+                statusEl.className = 'text-[9px] text-emerald-600 mt-1';
+            } else if (elapsed < 60) {
+                timerEl.className = 'text-2xl font-black text-cyan-400 font-mono tracking-wider';
+                statusEl.innerText = 'Good response time';
+                statusEl.className = 'text-[9px] text-cyan-500 mt-1';
+            } else if (elapsed < 180) {
+                timerEl.className = 'text-2xl font-black text-amber-500 font-mono tracking-wider';
+                statusEl.innerText = 'Moderate response time';
+                statusEl.className = 'text-[9px] text-amber-600 mt-1';
+            } else {
+                timerEl.className = 'text-2xl font-black text-rose-500 font-mono tracking-wider';
+                statusEl.innerText = 'Extended response time';
+                statusEl.className = 'text-[9px] text-rose-600 mt-1';
+            }
+        }
+
+        function resetRemediationTimer() {
+            if (remediationTimerInterval) {
+                clearInterval(remediationTimerInterval);
+                remediationTimerInterval = null;
+            }
+            remediationStartTime = null;
+            document.getElementById('remediation-timer').innerText = '--:--';
+            document.getElementById('remediation-timer').className = 'text-2xl font-black text-slate-600 font-mono tracking-wider';
+            document.getElementById('remediation-status').innerText = 'Not started';
+            document.getElementById('remediation-status').className = 'text-[9px] text-slate-700 mt-1';
+        }
+
+        function toggleClock() {
+            simActive = !simActive;
+            if (simActive) {
+                btnStart.innerText = "⏸ Pause Simulation";
+                btnStart.classList.replace('bg-emerald-600', 'bg-amber-600');
+                timerInterval = setInterval(tick, 1000);
+                appendLog("SYSTEM", `Simulation running [Mode: ${currentScenario.toUpperCase()}]`);
+            } else {
+                clearInterval(timerInterval);
+                btnStart.innerText = "▶ Resume Simulation";
+                btnStart.classList.replace('bg-amber-600', 'bg-emerald-600');
+                appendLog("SYSTEM", "Simulation timelines suspended by facilitator.");
+            }
+        }
+
+        function formatSimTime(totalSeconds) {
+            let hrs = Math.floor(totalSeconds / 3600).toString().padStart(2, '0');
+            let mins = Math.floor((totalSeconds % 3600) / 60).toString().padStart(2, '0');
+            let secs = (totalSeconds % 60).toString().padStart(2, '0');
+            return `${hrs}:${mins}:${secs}`;
+        }
+
+        function tick() {
+            timeElapsedSeconds += 60;
+            clockEl.innerText = formatSimTime(timeElapsedSeconds);
+            calculateSystemState();
+            if (Math.random() > 0.6) generateRoutineLogs();
+        }
+
+        function updateInfrastructure() {
+            infrastructure.packageState = document.getElementById('ctrl-package-version').value;
+
+            appendLog("CONFIG", `Package manifest state updated: ${infrastructure.packageState}`);
+            calculateSystemState();
+        }
+
+        // ==========================================
+        // AUTOMATED CHECK FLOW (INJECT #1 PART A)
+        // ==========================================
+        function triggerAutomatedCheck() {
+            // Stage 1: CVE Detection (already triggered)
+            updateTimelineStage(1);
+
+            setTimeout(() => {
+                appendLog("AUTOMATION", "Checking Lightwell API for patched version of lib-crypto-core...");
+                updateMetricsManual(88, 18, 20);
+                updateTimelineStage(2); // API Check
+                updateIncidentStatus('RESPONDING');
+            }, 1000);
+
+            setTimeout(() => {
+                appendLog("API_REQUEST", "GET /api/packages/lib-crypto-core/versions?cve=CVE-2026-1234");
+            }, 2200);
+
+            setTimeout(() => {
+                appendLog("API_RESPONSE", "Patched version found: lib-crypto-core v2.4.1-lw in Lightwell repository");
+                updateMetricsManual(90, 15, 18);
+                updateTimelineStage(3); // Patch Found
+            }, 3400);
+
+            setTimeout(() => {
+                appendLog("SECURE_SCAN", "Lightwell package signature verification: PASS");
+                updateMetricsManual(92, 12, 17);
+            }, 4600);
+
+            setTimeout(() => {
+                appendLog("MANIFEST_UPDATE", "Updating pom.xml with Lightwell repository and patched package");
+                document.getElementById('ctrl-package-version').value = 'PATCHED';
+                updateMetricsManual(94, 10, 16);
+            }, 5800);
+
+            setTimeout(() => {
+                appendLog("BUILD_ENG", "pom.xml updated successfully. Ready for deployment.");
+                // Reveal the CI/CD pipeline start trigger
+                btnCicd.classList.remove('hidden');
+                updateMetricsManual(95, 8, 15);
+            }, 7000);
+        }
+
+        // ==========================================
+        // SBOM GENERATION & SIGNING (INJECT #2)
+        // ==========================================
+        function triggerSBOMGeneration() {
+            setTimeout(() => {
+                appendLog("AUTOMATION", "Initiating automated SBOM generation for compliance audit...");
+            }, 800);
+
+            setTimeout(() => {
+                appendLog("SBOM_GEN", "Scanning production container images and dependency manifests...");
+            }, 1600);
+
+            setTimeout(() => {
+                appendLog("SBOM_GEN", "Analyzing package tree: 247 dependencies identified");
+            }, 2400);
+
+            setTimeout(() => {
+                if (!infrastructure.patchDeployed) {
+                    appendLog("SBOM_GEN", "⚠️ VULNERABLE COMPONENT DETECTED: lib-crypto-core v2.4.1-rc1 (CVE-2026-1234)");
+                    // Update metrics to reflect vulnerability detection in audit
+                    // This increases regulatory and reputational risk
+                    const currentHealth = activeInjects.includes(1) ? 70 : 90;
+                    updateMetricsManual(currentHealth, 40, 35);
+                } else {
+                    appendLog("SBOM_GEN", "✓ All components verified: lib-crypto-core v2.4.1-lw (patched)");
+                }
+            }, 3200);
+
+            setTimeout(() => {
+                appendLog("SBOM_FORMAT", "Generating CycloneDX SBOM (JSON format)...");
+            }, 4000);
+
+            setTimeout(() => {
+                const sbomHash = infrastructure.patchDeployed ? "a7f3c9e2..." : "d4b8f1a6...";
+                appendLog("CRYPTO_SIGN", `SBOM cryptographically signed with org key (SHA-256: ${sbomHash})`);
+            }, 4800);
+
+            setTimeout(() => {
+                const status = infrastructure.patchDeployed ? "COMPLIANT" : "VULNERABLE";
+                appendLog("COMPLIANCE", `SBOM published to audit portal. Status: ${status}`);
+
+                // Show remediation button if vulnerable
+                if (!infrastructure.patchDeployed) {
+                    btnRemediation.classList.remove('hidden');
+                }
+            }, 5600);
+
+            setTimeout(() => {
+                if (infrastructure.patchDeployed) {
+                    appendLog("MEDIA_RESP", "Auto-generated statement: 'CVE-2026-1234 remediated via automated patch deployment. Signed SBOM available for verification.'");
+                } else {
+                    appendLog("MEDIA_RESP", "Awaiting remediation completion for media statement...");
+                }
+            }, 6400);
+        }
+
+        // ==========================================
+        // REMEDIATION WORKFLOW (INJECT #2 PATH)
+        // ==========================================
+        function initiateRemediation() {
+            btnRemediation.classList.add('hidden');
+
+            // Start the same automated check flow as Use Case #1
+            showAppTimeline();
+            updateIncidentStatus('DETECTING');
+            updateTimelineStage(1);
+            triggerAutomatedCheck();
+        }
+
+        // ==========================================
+        // ANSIBLE AUDIT WORKFLOW (INJECT #3)
+        // ==========================================
+        function triggerAnsibleAudit() {
+            // Switch to Ansible timeline
+            switchToAnsibleTimeline();
+
+            setTimeout(() => {
+                appendLog("ANSIBLE", "Loading inventory: /etc/ansible/hosts");
+                updateAnsibleStage(1); // Inventory Scan
+            }, 800);
+
+            setTimeout(() => {
+                appendLog("INVENTORY", "Discovered 25 RHEL servers across 3 availability zones");
+            }, 1600);
+
+            setTimeout(() => {
+                appendLog("ANSIBLE", "Running playbook: compliance_audit.yml");
+            }, 2400);
+
+            setTimeout(() => {
+                appendLog("AUDIT", "Checking access controls on all servers...");
+            }, 3200);
+
+            setTimeout(() => {
+                appendLog("AUDIT", "✓ Access controls: 25/25 servers compliant (SSH key-based auth enforced)");
+                updateAnsibleStage(2); // Access Control
+            }, 4400);
+
+            setTimeout(() => {
+                appendLog("AUDIT", "Scanning for patch vulnerabilities...");
+            }, 5600);
+
+            setTimeout(() => {
+                appendLog("VULNERABILITY", "⚠️ Patch status: 7/25 servers require security updates");
+                updateAnsibleStage(3); // Vulnerability Scan
+                // Update metrics to reflect infrastructure vulnerabilities
+                const currentHealth = infrastructure.patchDeployed ? 100 : 90;
+                updateMetricsManual(currentHealth - 15, 35, 25);
+            }, 7200);
+
+            setTimeout(() => {
+                appendLog("ANSIBLE", "Vulnerable servers: rhel-prod-03, rhel-prod-07, rhel-prod-12, rhel-prod-15, rhel-prod-18, rhel-prod-21, rhel-prod-24");
+            }, 8400);
+
+            setTimeout(() => {
+                appendLog("DRIFT", "Drift detection: Configuration variance detected on 2 servers (non-critical)");
+                updateAnsibleStage(4); // Drift Check
+            }, 9600);
+
+            setTimeout(() => {
+                appendLog("ANSIBLE", "Audit complete. 7 servers require patching.");
+                btnAnsible.classList.remove('hidden');
+                serversAudited = true;
+            }, 10800);
+        }
+
+        // ==========================================
+        // ANSIBLE PATCH EXECUTION (INJECT #3 REMEDIATION)
+        // ==========================================
+        function executeAnsiblePatch() {
+            btnAnsible.classList.add('hidden');
+
+            appendLog("ANSIBLE", "Executing playbook: security_patch.yml on 7 servers");
+            updateIncidentStatus('PATCHING');
+            updateAnsibleStage(5); // Patch stage
+
+            setTimeout(() => {
+                appendLog("PATCH", "Downloading security updates from Red Hat repositories...");
+            }, 1000);
+
+            setTimeout(() => {
+                appendLog("PATCH", "rhel-prod-03: Installing 12 security updates...");
+            }, 2000);
+
+            setTimeout(() => {
+                appendLog("PATCH", "rhel-prod-07: Installing 8 security updates...");
+            }, 2800);
+
+            setTimeout(() => {
+                appendLog("PATCH", "rhel-prod-12: Installing 15 security updates...");
+            }, 3600);
+
+            setTimeout(() => {
+                appendLog("PATCH", "rhel-prod-15: Installing 10 security updates...");
+            }, 4400);
+
+            setTimeout(() => {
+                appendLog("PATCH", "rhel-prod-18: Installing 9 security updates...");
+            }, 5200);
+
+            setTimeout(() => {
+                appendLog("PATCH", "rhel-prod-21: Installing 11 security updates...");
+            }, 6000);
+
+            setTimeout(() => {
+                appendLog("PATCH", "rhel-prod-24: Installing 14 security updates...");
+            }, 6800);
+
+            setTimeout(() => {
+                appendLog("ANSIBLE", "All patches applied successfully.");
+            }, 7800);
+
+            setTimeout(() => {
+                appendLog("VERIFY", "Running post-patch verification...");
+            }, 8800);
+
+            setTimeout(() => {
+                appendLog("VERIFY", "✓ All 7 servers patched and verified");
+                updateAnsibleStage(6); // Verify stage
+            }, 10000);
+
+            setTimeout(() => {
+                appendLog("ANSIBLE", "Final status: 25/25 servers fully compliant and up-to-date");
+            }, 11200);
+
+            setTimeout(() => {
+                appendLog("INVENTORY", "Updated systems inventory: All servers patched, compliant, and operational");
+                serversAudited = false;
+                updateIncidentStatus('RESOLVED');
+                // Update metrics to reflect successful patching
+                const appHealth = infrastructure.patchDeployed ? 100 : 90;
+                updateMetricsManual(appHealth, 0, 0);
+            }, 12400);
+        }
+
+        // ==========================================
+        // SECRET ROTATION WORKFLOW (USE CASE #4)
+        // ==========================================
+        function triggerSecretRotation() {
+            switchToSecretTimeline();
+
+            setTimeout(() => {
+                appendLog("VAULT", "Connecting to HashiCorp Vault for credential rotation...");
+                updateSecretStage(1); // Secret Detection
+            }, 800);
+
+            setTimeout(() => {
+                appendLog("AWS_API", "Deactivating compromised AWS Access Key: AKIA***************");
+                updateSecretStage(2); // Vault Connect
+            }, 1600);
+
+            setTimeout(() => {
+                appendLog("VAULT", "Generating new AWS credentials via Vault dynamic secrets...");
+            }, 2400);
+
+            setTimeout(() => {
+                appendLog("AWS_API", "New Access Key created and activated: AKIA***************");
+                updateSecretStage(3); // Rotate Creds
+            }, 3200);
+
+            setTimeout(() => {
+                appendLog("VAULT", "Storing new credentials in Vault path: /secret/prod/aws");
+            }, 4000);
+
+            setTimeout(() => {
+                appendLog("NOTIFICATION", "Notifying 7 affected services of credential rotation...");
+                updateMetricsManual(92, 20, 15);
+                updateSecretStage(4); // Notify Services
+            }, 4800);
+
+            setTimeout(() => {
+                appendLog("GIT_CLEAN", "Initiating BFG Repo-Cleaner to purge secrets from git history...");
+            }, 5600);
+
+            setTimeout(() => {
+                appendLog("GIT_CLEAN", "Rewriting commit history: 243 commits analyzed");
+            }, 7200);
+
+            setTimeout(() => {
+                appendLog("GIT_CLEAN", "✓ Secrets removed from all branches and tags");
+                updateSecretStage(5); // Git Cleanup
+            }, 8800);
+
+            setTimeout(() => {
+                appendLog("VERIFY", "Testing new credentials across all services...");
+            }, 9600);
+
+            setTimeout(() => {
+                appendLog("VERIFY", "✓ All 7 services successfully authenticated with new credentials");
+                updateMetricsManual(100, 0, 0);
+                updateIncidentStatus('RESOLVED');
+                updateSecretStage(6); // Verify
+            }, 10800);
+        }
+
+        // ==========================================
+        // CERTIFICATE RENEWAL WORKFLOW (USE CASE #5)
+        // ==========================================
+        function triggerCertRenewal() {
+            switchToCertTimeline();
+
+            setTimeout(() => {
+                appendLog("CERT_BOT", "Initiating Let's Encrypt ACME protocol...");
+                updateCertStage(1); // Expiry Detect
+            }, 800);
+
+            setTimeout(() => {
+                appendLog("ACME", "Requesting certificate for: api.example.com");
+                updateCertStage(2); // ACME Request
+            }, 1600);
+
+            setTimeout(() => {
+                appendLog("ACME", "Completing HTTP-01 challenge validation...");
+            }, 2400);
+
+            setTimeout(() => {
+                appendLog("ACME", "✓ Domain ownership verified");
+            }, 3600);
+
+            setTimeout(() => {
+                appendLog("CERT_BOT", "Certificate issued successfully (valid 90 days)");
+                updateCertStage(3); // Cert Issued
+            }, 4800);
+
+            setTimeout(() => {
+                appendLog("DEPLOY", "Deploying certificate to 12 load balancers...");
+                updateMetricsManual(95, 10, 10);
+            }, 5600);
+
+            setTimeout(() => {
+                appendLog("LB_01", "✓ Load balancer lb-prod-01: Certificate updated");
+            }, 6400);
+
+            setTimeout(() => {
+                appendLog("LB_02", "✓ Load balancer lb-prod-02: Certificate updated");
+            }, 7200);
+
+            setTimeout(() => {
+                appendLog("LB_03", "✓ Load balancer lb-prod-03: Certificate updated");
+            }, 8000);
+
+            setTimeout(() => {
+                appendLog("DEPLOY", "✓ All 12 load balancers updated successfully");
+                updateCertStage(4); // Deploy LBs
+            }, 9200);
+
+            setTimeout(() => {
+                appendLog("VERIFY", "Testing SSL/TLS endpoints: 47 endpoints checked");
+                updateCertStage(5); // Test Endpoints
+            }, 10000);
+
+            setTimeout(() => {
+                appendLog("VERIFY", "✓ All endpoints responding with valid certificate");
+                updateMetricsManual(100, 0, 0);
+                updateIncidentStatus('RESOLVED');
+                updateCertStage(6); // Verify
+            }, 11200);
+        }
+
+        // ==========================================
+        // CLOUD REMEDIATION WORKFLOW (USE CASE #6)
+        // ==========================================
+        function triggerCloudRemediation() {
+            switchToCloudTimeline();
+
+            setTimeout(() => {
+                appendLog("CSPM", "Analyzing S3 bucket ACL permissions...");
+                updateCloudStage(1); // CSPM Detect
+            }, 800);
+
+            setTimeout(() => {
+                appendLog("CSPM", "⚠️ Bucket policy allows public read access - CRITICAL");
+                updateMetricsManual(75, 35, 25);
+                updateCloudStage(2); // ACL Analysis
+            }, 1600);
+
+            setTimeout(() => {
+                appendLog("AWS_API", "Revoking public access via S3 Block Public Access...");
+            }, 2400);
+
+            setTimeout(() => {
+                appendLog("AWS_API", "✓ Bucket is now private - public access blocked");
+                updateMetricsManual(85, 25, 18);
+                updateCloudStage(3); // Block Public
+            }, 3600);
+
+            setTimeout(() => {
+                appendLog("DATA_CLASS", "Scanning 12,847 objects for sensitive data classification...");
+            }, 4400);
+
+            setTimeout(() => {
+                appendLog("DATA_CLASS", "Detected: 4,231 objects with PII, 892 with financial data");
+                updateCloudStage(4); // Data Classify
+            }, 6000);
+
+            setTimeout(() => {
+                appendLog("COMPLIANCE", "Generating incident report for security team...");
+            }, 7200);
+
+            setTimeout(() => {
+                appendLog("CSPM", "Scanning account for similar misconfigurations...");
+            }, 8400);
+
+            setTimeout(() => {
+                appendLog("CSPM", "✓ 47 other buckets scanned - all properly configured");
+                updateCloudStage(5); // Scan Similar
+            }, 9600);
+
+            setTimeout(() => {
+                appendLog("POLICY", "Deploying preventive SCP policy to prevent future public buckets...");
+            }, 10800);
+
+            setTimeout(() => {
+                appendLog("POLICY", "✓ Service Control Policy applied across all AWS accounts");
+                updateMetricsManual(100, 0, 0);
+                updateIncidentStatus('RESOLVED');
+                updateCloudStage(6); // Policy Deploy
+            }, 12000);
+        }
+
+        // ==========================================
+        // DEPLOY AGENT FLOW (INJECT #1 PART B - UNBLOCKED)
+        // ==========================================
+        function executeDeployAgent() {
+            btnCicd.classList.add('hidden');
+
+            appendLog("CI/CD", "Pipeline initiated. Starting deployment process...");
+            updateMetricsManual(95, 7, 8);
+            updateIncidentStatus('DEPLOYING');
+
+            setTimeout(() => {
+                appendLog("DOWNLOAD", "Downloading patched package from Lightwell: lib-crypto-core v2.4.1-lw");
+                updateMetricsManual(95, 6, 7);
+            }, 800);
+
+            setTimeout(() => {
+                appendLog("AUTH", "Package credentials verified successfully");
+                updateMetricsManual(96, 5, 6);
+            }, 1600);
+
+            setTimeout(() => {
+                appendLog("SECURITY", "Package cryptographically signed - signature verified");
+                updateMetricsManual(96, 4, 5);
+            }, 2400);
+
+            setTimeout(() => {
+                appendLog("BUILD", "Re-building application with patched package...");
+                updateMetricsManual(97, 4, 4);
+                updateTimelineStage(4); // Build
+            }, 3200);
+
+            setTimeout(() => {
+                appendLog("BUILD", "Application build completed successfully");
+                updateMetricsManual(97, 3, 3);
+            }, 4800);
+
+            setTimeout(() => {
+                appendLog("DEPLOY", "Starting deployment process...");
+                updateMetricsManual(98, 2, 2);
+                updateTimelineStage(5); // Deploy
+            }, 5600);
+
+            setTimeout(() => {
+                appendLog("DEPLOY", "Initiating blue/green deployment strategy");
+                updateMetricsManual(98, 2, 1);
+            }, 6400);
+
+            setTimeout(() => {
+                appendLog("BLUE_ENV", "Deploying to blue environment...");
+                updateMetricsManual(98, 2, 1);
+            }, 7200);
+
+            setTimeout(() => {
+                appendLog("TEST", "Testing blue deployment: Running health checks...");
+            }, 8400);
+
+            setTimeout(() => {
+                appendLog("TEST", "Blue deployment testing: SUCCESS ✓");
+                updateMetricsManual(99, 1, 1);
+            }, 9600);
+
+            setTimeout(() => {
+                appendLog("GREEN_ENV", "Deploying to green environment...");
+            }, 10400);
+
+            setTimeout(() => {
+                appendLog("TEST", "Testing green deployment: Running health checks...");
+            }, 11600);
+
+            setTimeout(() => {
+                appendLog("TEST", "Green deployment testing: SUCCESS ✓");
+                updateMetricsManual(100, 0, 0);
+                updateTimelineStage(6); // Verified
+            }, 12800);
+
+            setTimeout(() => {
+                appendLog("DEPLOY", "Blue/green deployment completed successfully");
+                infrastructure.packageState = 'PATCHED';
+                infrastructure.patchDeployed = true;
+                updateMetricsManual(100, 0, 0);
+                updateIncidentStatus('RESOLVED');
+            }, 13600);
+        }
+
+        function showUseCaseModal(id) {
+            console.log('showUseCaseModal called with id:', id);
+            const modal = document.getElementById('use-case-modal');
+            const modalIcon = document.getElementById('modal-icon');
+            const modalTitle = document.getElementById('modal-title');
+            const modalSubtitle = document.getElementById('modal-subtitle');
+            const modalDescription = document.getElementById('modal-description');
+
+            pendingUseCase = id;
+            console.log('pendingUseCase set to:', pendingUseCase);
+
+            if (id === 1) {
+                modalIcon.innerText = '📦';
+                modalTitle.innerText = 'Use Case #1: Supply Chain Threat';
+                modalSubtitle.innerText = 'CVE-2026-1234 Detection & Automated Remediation';
+                modalDescription.innerHTML = `
+                    A critical vulnerability (CVE-2026-1234) has been discovered in the <strong>lib-crypto-core</strong> package v2.4.1-rc1 currently deployed in production. The automated security workflow will detect, verify, patch, and deploy a secure version from the Lightwell repository.
+                    <br><br>
+                    <strong class="text-cyan-400">Workflow Steps:</strong> CVE Detection → Lightwell API Check → Patch Verification → pom.xml Update → CI/CD Pipeline → Blue/Green Deployment → Verification
+                `;
+            } else if (id === 2) {
+                modalIcon.innerText = '⚖️';
+                modalTitle.innerText = 'Use Case #2: Compliance & Media Pressure';
+                modalSubtitle.innerText = 'SBOM Generation & Regulatory Response';
+                modalDescription.innerHTML = `
+                    A federal compliance auditor has requested immediate proof of CVE-2026-1234 remediation status, while TechCrunch is seeking a statement on supply chain security posture. The automated workflow will generate a cryptographically-signed SBOM and provide transparent compliance documentation.
+                    <br><br>
+                    <strong class="text-rose-400">Workflow Steps:</strong> Compliance Request → SBOM Generation → Dependency Analysis → Cryptographic Signing → Audit Portal Publication → Optional Remediation
+                `;
+            } else if (id === 3) {
+                modalIcon.innerText = '🔧';
+                modalTitle.innerText = 'Use Case #3: Infrastructure Audit';
+                modalSubtitle.innerText = 'Ansible Automation Platform Server Compliance';
+                modalDescription.innerHTML = `
+                    A scheduled compliance audit requires verification of all 25 production RHEL servers. Ansible Automation Platform will perform automated inventory discovery, access control verification, vulnerability scanning, and drift detection across the infrastructure.
+                    <br><br>
+                    <strong class="text-purple-400">Workflow Steps:</strong> Inventory Scan → Access Control Check → Vulnerability Detection → Drift Analysis → Automated Patching → Post-Patch Verification
+                `;
+            } else if (id === 4) {
+                modalIcon.innerText = '🔐';
+                modalTitle.innerText = 'Use Case #4: Secret Sprawl Detection';
+                modalSubtitle.innerText = 'Automated Credential Rotation & Remediation';
+                modalDescription.innerHTML = `
+                    Secret scanning has detected hard-coded API credentials in a recent git commit. The automated workflow will rotate the compromised credentials, update vault storage, notify affected services, and purge secrets from git history.
+                    <br><br>
+                    <strong class="text-orange-400">Workflow Steps:</strong> Secret Detection → Vault Integration → Credential Rotation → Service Notification → Git History Cleanup → Verification
+                `;
+            } else if (id === 5) {
+                modalIcon.innerText = '📜';
+                modalTitle.innerText = 'Use Case #5: Certificate Expiration Crisis';
+                modalSubtitle.innerText = 'Automated SSL/TLS Certificate Renewal';
+                modalDescription.innerHTML = `
+                    Certificate monitoring has detected that the production SSL/TLS certificate for api.example.com expires in 24 hours. The automated workflow will renew the certificate via Let's Encrypt, deploy across all load balancers, and verify zero-downtime rotation.
+                    <br><br>
+                    <strong class="text-blue-400">Workflow Steps:</strong> Expiration Detection → ACME Challenge → Certificate Issuance → Multi-Node Deployment → Validation → Zero-Downtime Rotation
+                `;
+            } else if (id === 6) {
+                modalIcon.innerText = '☁️';
+                modalTitle.innerText = 'Use Case #6: Cloud Misconfiguration';
+                modalSubtitle.innerText = 'Automated S3 Bucket Security Remediation';
+                modalDescription.innerHTML = `
+                    Cloud Security Posture Management (CSPM) has detected a publicly accessible S3 bucket containing sensitive customer data. The automated workflow will immediately remediate the exposure, classify data, generate compliance reports, and deploy preventive policies.
+                    <br><br>
+                    <strong class="text-teal-400">Workflow Steps:</strong> CSPM Detection → ACL Remediation → Data Classification → Compliance Report → Similar Resource Scan → Preventive Policy Deployment
+                `;
+            }
+
+            modal.classList.remove('hidden');
+            console.log('Modal shown, pendingUseCase is now:', pendingUseCase);
+        }
+
+        function closeUseCaseModal() {
+            console.log('closeUseCaseModal called, pendingUseCase before clear:', pendingUseCase);
+            document.getElementById('use-case-modal').classList.add('hidden');
+            pendingUseCase = null;
+            console.log('Modal closed, pendingUseCase cleared');
+        }
+
+        function startUseCaseRemediation() {
+            console.log('Starting use case remediation, pending:', pendingUseCase);
+            // Save the value before closing modal (which clears it)
+            const useCaseId = pendingUseCase;
+            closeUseCaseModal();
+
+            if (useCaseId) {
+                console.log('Executing use case:', useCaseId);
+                executeUseCase(useCaseId);
+            } else {
+                console.error('No pending use case!');
+            }
+        }
+
+        function triggerInject(id) {
+            // Show modal instead of immediately triggering
+            showUseCaseModal(id);
+        }
+
+        function executeUseCase(id) {
+            console.log('executeUseCase called with id:', id);
+            if (activeInjects.includes(id)) {
+                console.log('Use case already active, returning');
+                return;
+            }
+            activeInjects.push(id);
+            const timestamp = formatSimTime(timeElapsedSeconds);
+            let messageHtml = '';
+            console.log('Executing use case workflow for:', id);
+
+            if (id === 1) {
+                messageHtml = `<div class="bg-amber-950/40 border border-amber-800/60 p-3 rounded-lg text-xs">
+                    <div class="flex justify-between font-bold text-amber-400 mb-1"><span>📦 DEPENDENCY ALERT // CVE-2026-1234</span><span>${timestamp}</span></div>
+                    <p class="text-slate-300">Frontier autonomous model discovers severe dependency exploit in 'lib-crypto-core v2.4.1-rc1'. The software package manager manifest relies directly on this module in operational production.</p>
+                </div>`;
+                appendLog("SECURITY", "SBOM Audit Scanner flags active vulnerability match on live server pods.");
+
+                // Show app timeline and update incident status
+                showAppTimeline();
+                updateIncidentStatus('DETECTING');
+
+                // Trigger automated checks
+                triggerAutomatedCheck();
+            } else if (id === 2) {
+                messageHtml = `<div class="bg-rose-950/40 border border-rose-900/60 p-3 rounded-lg text-xs">
+                    <div class="flex justify-between font-bold text-rose-400 mb-1"><span>⚖️ COMPLIANCE ALERT & MEDIA INQUIRY</span><span>${timestamp}</span></div>
+                    <p class="text-slate-300 mb-2">Federal compliance auditor requests immediate proof of CVE-2026-1234 remediation status. Tech journalist from TechCrunch seeking statement on supply chain security posture.</p>
+                    <div class="text-[10px] text-amber-300 border-t border-rose-800 pt-2 mt-2">⏱ Auditor deadline: 60 minutes | Media deadline: 30 minutes</div>
+                </div>`;
+                appendLog("COMPLIANCE", "URGENT: Federal auditor demands signed SBOM and remediation evidence.");
+                appendLog("MEDIA", "TechCrunch inquiry: Statement requested on CVE-2026-1234 response timeline.");
+
+                // Update incident status
+                updateIncidentStatus('COMPLIANCE');
+
+                // Trigger automated SBOM generation and signing
+                triggerSBOMGeneration();
+            } else if (id === 3) {
+                messageHtml = `<div class="bg-purple-950/40 border border-purple-800/60 p-3 rounded-lg text-xs">
+                    <div class="flex justify-between font-bold text-purple-400 mb-1"><span>🔧 INFRASTRUCTURE AUDIT REQUEST</span><span>${timestamp}</span></div>
+                    <p class="text-slate-300 mb-2">Scheduled compliance audit requires verification of all production RHEL servers. Ansible Automation Platform will perform automated inventory, access control verification, and vulnerability scanning.</p>
+                    <div class="text-[10px] text-purple-300 border-t border-purple-800 pt-2 mt-2">📊 Target: 25 Red Hat Enterprise Linux servers</div>
+                </div>`;
+                appendLog("ANSIBLE", "Initiating Ansible Automation Platform system audit...");
+
+                // Update incident status
+                updateIncidentStatus('AUDITING');
+
+                // Trigger Ansible audit workflow
+                triggerAnsibleAudit();
+            } else if (id === 4) {
+                messageHtml = `<div class="bg-orange-950/40 border border-orange-800/60 p-3 rounded-lg text-xs">
+                    <div class="flex justify-between font-bold text-orange-400 mb-1"><span>🔐 SECRET SPRAWL DETECTED</span><span>${timestamp}</span></div>
+                    <p class="text-slate-300 mb-2">Automated secret scanning has identified hard-coded AWS API credentials in commit a7f3c9e. The credentials have been exposed in the public repository for approximately 47 minutes. Immediate rotation required.</p>
+                    <div class="text-[10px] text-orange-300 border-t border-orange-800 pt-2 mt-2">⚠️ Exposed: AWS Access Key ID, Secret Access Key | Repository: production-api</div>
+                </div>`;
+                appendLog("SECRET_SCAN", "Hard-coded credentials detected in commit a7f3c9e2");
+
+                // Update incident status
+                updateIncidentStatus('DETECTING');
+
+                // Trigger secret rotation workflow
+                triggerSecretRotation();
+            } else if (id === 5) {
+                messageHtml = `<div class="bg-blue-950/40 border border-blue-800/60 p-3 rounded-lg text-xs">
+                    <div class="flex justify-between font-bold text-blue-400 mb-1"><span>📜 CERTIFICATE EXPIRATION WARNING</span><span>${timestamp}</span></div>
+                    <p class="text-slate-300 mb-2">SSL/TLS certificate for api.example.com expires in 23 hours 14 minutes. Current certificate affects 12 production load balancers and 47 active API endpoints. Automated renewal workflow initiated.</p>
+                    <div class="text-[10px] text-blue-300 border-t border-blue-800 pt-2 mt-2">📅 Expires: Tomorrow 14:32 UTC | Issuer: Let's Encrypt | Affected endpoints: 47</div>
+                </div>`;
+                appendLog("CERT_MONITOR", "Certificate expiration detected for api.example.com");
+
+                // Update incident status
+                updateIncidentStatus('DETECTING');
+
+                // Trigger certificate renewal workflow
+                triggerCertRenewal();
+            } else if (id === 6) {
+                messageHtml = `<div class="bg-teal-950/40 border border-teal-800/60 p-3 rounded-lg text-xs">
+                    <div class="flex justify-between font-bold text-teal-400 mb-1"><span>☁️ CLOUD SECURITY ALERT</span><span>${timestamp}</span></div>
+                    <p class="text-slate-300 mb-2">CSPM has detected S3 bucket "customer-data-backup-2026" is publicly accessible. Bucket contains 12,847 objects (approximately 4.2TB) including PII and financial records. Immediate remediation required.</p>
+                    <div class="text-[10px] text-teal-300 border-t border-teal-800 pt-2 mt-2">☁️ Cloud: AWS us-east-1 | Bucket: customer-data-backup-2026 | Public since: ~3 hours ago</div>
+                </div>`;
+                appendLog("CSPM", "Public S3 bucket detected: customer-data-backup-2026");
+
+                // Update incident status
+                updateIncidentStatus('DETECTING');
+
+                // Trigger cloud remediation workflow
+                triggerCloudRemediation();
+            }
+
+
+            if (commsFeed.innerHTML.includes("Waiting for simulation")) commsFeed.innerHTML = '';
+            commsFeed.innerHTML = messageHtml + commsFeed.innerHTML;
+            calculateSystemState();
+        }
+
+        function calculateSystemState() {
+            let health = 100; let regulatory = 0; let prScore = 0;
+
+            if (activeInjects.includes(1)) {
+                if (!infrastructure.patchDeployed) {
+                    health -= 10;
+                    regulatory += 15;
+                    prScore += 15; // Initial PR exposure from CVE discovery - AMBER status
+                }
+            }
+            if (activeInjects.includes(2)) {
+                if (!infrastructure.patchDeployed) {
+                    health = Math.max(health - 30, 5);
+                    regulatory += 25;
+                    prScore += 35; // Significant PR damage from compliance/media pressure
+                } else {
+                    health = Math.min(health + 20, 100);
+                }
+            }
+
+            health = Math.max(0, Math.min(100, health));
+            regulatory = Math.max(0, Math.min(100, regulatory));
+
+            // Update health and regulatory as percentages
+            document.getElementById('stat-health').innerText = `${health}%`;
+            document.getElementById('stat-reg').innerText = `${regulatory}%`;
+            document.getElementById('bar-health').style.width = `${health}%`;
+            document.getElementById('bar-reg').style.width = `${regulatory}%`;
+
+            updateMetricColors('stat-health', health, true);
+            updateMetricColors('stat-reg', regulatory, false);
+
+            // Calculate RAG status for reputational risk
+            updateRAGStatus(prScore);
+        }
+
+        function updateMetricColors(elementId, rate, inverse = false) {
+            const el = document.getElementById(elementId);
+            el.className = "text-3xl font-black mt-1 ";
+            if (inverse) {
+                if (rate > 75) el.className += "text-emerald-400";
+                else if (rate > 40) el.className += "text-amber-500";
+                else el.className += "text-rose-600";
+            } else {
+                if (rate < 25) el.className += "text-slate-400";
+                else if (rate < 60) el.className += "text-amber-500";
+                else el.className += "text-rose-600";
+            }
+        }
+
+        function updateRAGStatus(prScore) {
+            const statusEl = document.getElementById('stat-pr');
+            const descEl = statusEl.nextElementSibling;
+
+            if (prScore === 0) {
+                statusEl.innerText = 'GREEN';
+                statusEl.className = 'text-3xl font-black text-emerald-400 mt-1';
+                descEl.innerText = 'Low risk - No active threats';
+                descEl.className = 'text-[10px] text-slate-500 mt-1';
+            } else if (prScore < 15) {
+                statusEl.innerText = 'GREEN';
+                statusEl.className = 'text-3xl font-black text-emerald-400 mt-1';
+                descEl.innerText = 'Low risk - Contained situation';
+                descEl.className = 'text-[10px] text-emerald-600 mt-1';
+            } else if (prScore < 30) {
+                statusEl.innerText = 'AMBER';
+                statusEl.className = 'text-3xl font-black text-amber-500 mt-1';
+                descEl.innerText = 'Moderate risk - Monitoring required';
+                descEl.className = 'text-[10px] text-amber-600 mt-1';
+            } else {
+                statusEl.innerText = 'RED';
+                statusEl.className = 'text-3xl font-black text-rose-600 mt-1';
+                descEl.innerText = 'High risk - Active exposure';
+                descEl.className = 'text-[10px] text-rose-600 mt-1';
+            }
+        }
+
+        function updateMetricsManual(health, regulatory, prScore) {
+            document.getElementById('stat-health').innerText = `${health}%`;
+            document.getElementById('stat-reg').innerText = `${regulatory}%`;
+
+            document.getElementById('bar-health').style.width = `${health}%`;
+            document.getElementById('bar-reg').style.width = `${regulatory}%`;
+
+            updateMetricColors('stat-health', health, true);
+            updateMetricColors('stat-reg', regulatory, false);
+
+            // Update RAG status
+            updateRAGStatus(prScore);
+        }
+
+        function generateRoutineLogs() {
+            if (infrastructure.patchDeployed) {
+                appendLog("CORE_APP", "SECURE: Application running with patched Lightwell version lib-crypto-core v2.4.1-lw.");
+            } else if (activeInjects.includes(1)) {
+                appendLog("DEPENDENCY", "WARNING: Vulnerable lib-crypto-core v2.4.1-rc1 detected in production manifest.");
+            } else {
+                appendLog("DEPENDENCY", "INFO: Package checks active on container manifest path node modules.");
+            }
+        }
+
+        function appendLog(subsystem, text) {
+            const timestamp = formatSimTime(timeElapsedSeconds);
+            const line = document.createElement('div');
+
+            // Determine color based on subsystem and message content
+            let subsystemColor = 'text-cyan-400';
+            let textColor = 'text-emerald-500';
+
+            // Check for positive/success indicators first
+            if (text.includes('SUCCESS') || text.includes('PASS') || text.includes('✓') || text.includes('verified') || text.includes('signed')) {
+                subsystemColor = 'text-emerald-500';
+                textColor = 'text-emerald-500';
+            }
+            // Then check for critical/security threats
+            else if (text.includes('CRITICAL') || text.includes('ERROR') || text.includes('ALERT') || text.includes('flags active vulnerability')) {
+                subsystemColor = 'text-rose-500';
+                textColor = 'text-rose-400';
+            }
+            // Then check for warnings
+            else if (subsystem.includes('WARNING') || text.includes('WARNING') || text.includes('WARN') || subsystem === 'COMPLIANCE' || subsystem === 'MEDIA') {
+                subsystemColor = 'text-amber-500';
+                textColor = 'text-amber-400';
+            }
+            // SECURITY/SIEM/EXPLOIT/VULNERABILITY subsystems default to red unless already handled above
+            else if (subsystem === 'SECURITY' || subsystem === 'SIEM' || subsystem === 'EXPLOIT' || subsystem === 'VULNERABILITY') {
+                subsystemColor = 'text-rose-500';
+                textColor = 'text-rose-400';
+            }
+
+            line.innerHTML = `<span class="text-slate-500">[${timestamp}]</span> <span class="${subsystemColor} font-bold">${subsystem}:</span> <span class="${textColor}">${text}</span>`;
+            terminalLog.appendChild(line);
+            terminalLog.scrollTop = terminalLog.scrollHeight;
+        }
+
+        function resetSim() {
+            clearInterval(timerInterval);
+            simActive = false; timeElapsedSeconds = 0; activeInjects = [];
+            infrastructure = { packageState: 'VULNERABLE', patchDeployed: false };
+
+            document.getElementById('ctrl-package-version').value = 'VULNERABLE';
+
+            btnCicd.classList.add('hidden');
+            btnRemediation.classList.add('hidden');
+            btnAnsible.classList.add('hidden');
+            serversAudited = false;
+            clockEl.innerText = "00:00:00";
+            btnStart.innerText = "▶ Start Simulation";
+            btnStart.className = "bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 px-3 rounded text-xs transition";
+
+
+            commsFeed.innerHTML = `<div class="text-xs text-slate-500 text-center py-8">Waiting for simulation baseline to initiate...</div>`;
+            terminalLog.innerHTML = `<div>[00:00:00] SYSTEM: Simulation sandbox initialization finished. Environment clean.</div>`;
+
+            resetTimeline();
+            updateIncidentStatus('IDLE');
+            resetRemediationTimer();
+            calculateSystemState();
+        }
+    </script>
+</body>
+</html>
