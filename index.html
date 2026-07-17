@@ -7,9 +7,323 @@
     <!-- Tailwind CSS for modern interface styling -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
+        /* Dark Theme (default) */
         .cyber-bg {
             background: radial-gradient(circle at 50% 50%, #0f172a 0%, #020617 100%);
         }
+
+        /* Light Theme */
+        body.light-theme {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%) !important;
+        }
+        body.light-theme .cyber-bg {
+            background: linear-gradient(135deg, #f0f4f8 0%, #e2e8f0 100%) !important;
+        }
+
+        /* Text colors - high contrast for readability */
+        body.light-theme .text-slate-100,
+        body.light-theme .text-slate-200,
+        body.light-theme .text-slate-300 {
+            color: #0f172a !important;
+        }
+        body.light-theme .text-slate-400 {
+            color: #334155 !important;
+        }
+        body.light-theme .text-slate-500 {
+            color: #475569 !important;
+        }
+        body.light-theme .text-slate-600 {
+            color: #64748b !important;
+        }
+        body.light-theme .text-slate-700 {
+            color: #334155 !important;
+        }
+        body.light-theme .text-emerald-500,
+        body.light-theme .text-emerald-400 {
+            color: #059669 !important;
+        }
+        body.light-theme .text-cyan-400 {
+            color: #0891b2 !important;
+        }
+        body.light-theme .text-amber-400 {
+            color: #d97706 !important;
+        }
+        body.light-theme .text-rose-400,
+        body.light-theme .text-rose-500 {
+            color: #e11d48 !important;
+        }
+        body.light-theme .text-purple-400 {
+            color: #9333ea !important;
+        }
+        body.light-theme .text-orange-400 {
+            color: #ea580c !important;
+        }
+        body.light-theme .text-blue-400 {
+            color: #2563eb !important;
+        }
+        body.light-theme .text-teal-400 {
+            color: #0d9488 !important;
+        }
+        body.light-theme .text-pink-500 {
+            color: #ec4899 !important;
+        }
+
+        /* Backgrounds - Clean white/light */
+        body.light-theme .bg-slate-900\\/40,
+        body.light-theme .bg-slate-900\\/60,
+        body.light-theme .bg-slate-900 {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme .bg-slate-950\\/80,
+        body.light-theme .bg-slate-950\\/60 {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme .bg-slate-950 {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+            color: #0f172a !important;
+        }
+        body.light-theme .bg-slate-800 {
+            background-color: #f1f5f9 !important;
+            color: #0f172a !important;
+        }
+        body.light-theme .bg-slate-800:hover {
+            background-color: #e2e8f0 !important;
+        }
+        body.light-theme .bg-slate-700 {
+            background-color: #e2e8f0 !important;
+        }
+        body.light-theme .bg-slate-600 {
+            background-color: #cbd5e1 !important;
+        }
+        body.light-theme .border-slate-800,
+        body.light-theme .border-slate-700 {
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme .bg-black\\/40 {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme .border-slate-900\\/60,
+        body.light-theme .border-slate-900 {
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Progress bars keep their colors */
+        body.light-theme .bg-slate-800.h-1\\.5 {
+            background-color: #e2e8f0 !important;
+        }
+
+        /* Terminal/Console */
+        body.light-theme #terminal-log {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme #terminal-log div {
+            color: #0f172a !important;
+        }
+
+        /* Incident Status - force light theme */
+        body.light-theme #incident-status,
+        body.light-theme .bg-slate-950\\/80.p-3 {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Fix "Waiting for simulation" text */
+        body.light-theme #comms-feed,
+        body.light-theme #comms-feed div {
+            color: #64748b !important;
+        }
+
+        /* SIEM logs header */
+        body.light-theme .text-slate-400.tracking-widest {
+            color: #475569 !important;
+        }
+
+        /* Facilitator Panel - lighter in light mode */
+        body.light-theme #facilitator-panel {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Modal/Dialog Box - light theme */
+        body.light-theme .modal-overlay {
+            background: rgba(0, 0, 0, 0.5) !important;
+        }
+        body.light-theme .modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme .modal-content .bg-slate-900\\/60 {
+            background-color: #f1f5f9 !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Learning Mode Panel - light theme - WHITE background */
+        body.light-theme #learning-mode-panel {
+            background: #ffffff !important;
+        }
+        body.light-theme #learning-mode-panel .container {
+            background: #ffffff !important;
+        }
+        body.light-theme #learning-mode-panel .bg-slate-900\\/60,
+        body.light-theme #learning-mode-panel .bg-slate-800\\/60 {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme #learning-mode-panel .bg-slate-950\\/40 {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Use Case Cards - gradient backgrounds in light mode */
+        body.light-theme .bg-gradient-to-br {
+            background: linear-gradient(to bottom right, #ffffff, #f8fafc) !important;
+        }
+
+        /* Learning Mode button - blue/teal in light mode */
+        body.light-theme #btn-mode-toggle.bg-gradient-to-r {
+            background: linear-gradient(to right, #0891b2, #0e7490) !important;
+            color: #ffffff !important;
+        }
+        body.light-theme #btn-mode-toggle.bg-gradient-to-r:hover {
+            background: linear-gradient(to right, #06b6d4, #0891b2) !important;
+        }
+
+        /* Scenario card in learning mode */
+        body.light-theme .from-amber-950\\/40 {
+            background: linear-gradient(to right, #fef3c7, #fde68a) !important;
+        }
+        body.light-theme .border-amber-800\\/60 {
+            border-color: #f59e0b !important;
+        }
+
+        /* Step library items */
+        body.light-theme .step-item {
+            background-color: #ffffff !important;
+            border-color: #0891b2 !important;
+        }
+
+        /* Workflow slots */
+        body.light-theme .workflow-slot {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+        }
+        body.light-theme .workflow-slot:hover {
+            border-color: #a855f7 !important;
+        }
+
+        /* Fix button text colors in light mode */
+        body.light-theme #btn-mode-toggle {
+            color: #ffffff !important;
+        }
+        body.light-theme #btn-comparison {
+            color: #0f172a !important;
+        }
+        body.light-theme #btn-theme-toggle {
+            color: #0f172a !important;
+        }
+
+        /* "Incoming Crisis Intelligence Stream" - more visible */
+        body.light-theme .text-cyan-400.tracking-widest {
+            color: #0369a1 !important;
+            font-weight: 700 !important;
+        }
+
+        /* Comms feed background */
+        body.light-theme #comms-feed {
+            background-color: transparent !important;
+        }
+
+        /* Learning Mode - white backgrounds for main panels */
+        body.light-theme #step-library,
+        body.light-theme #workflow-builder {
+            background-color: transparent !important;
+        }
+        body.light-theme .space-y-2.mb-6 {
+            background-color: transparent !important;
+        }
+
+        /* Learning mode containers */
+        body.light-theme #learning-mode-panel .bg-slate-900\\/60.border.border-slate-800.rounded-xl.p-5 {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Mission/description box */
+        body.light-theme .bg-slate-900\\/60.border.border-slate-700.rounded-lg.p-3 {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Learning Mode: Available Steps and Your Workflow panels - WHITE */
+        body.light-theme #workflow-learning-content .bg-slate-900\\/60.border.border-slate-800.rounded-xl.p-5 {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Learning Mode: Scenario card with mission - WHITE */
+        body.light-theme #scenario-card {
+            background: #ffffff !important;
+            border-color: #f59e0b !important;
+        }
+
+        /* Learning Mode: Mission box inside - light */
+        body.light-theme #scenario-card .bg-slate-900\\/60 {
+            background-color: #fef3c7 !important;
+            border-color: #fbbf24 !important;
+        }
+
+        /* Fix "lib-crypto-core" code tag background */
+        body.light-theme code.bg-slate-900\\/60 {
+            background-color: #e0e7ff !important;
+            color: #0891b2 !important;
+        }
+
+        /* Fix ALL gray panels in Learning Mode with aggressive selector */
+        body.light-theme #learning-mode-panel [class*="bg-slate-900"] {
+            background-color: #ffffff !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Mission box - keep it amber/yellow */
+        body.light-theme #scenario-card [class*="bg-slate-900"] {
+            background-color: #fef3c7 !important;
+            border-color: #fbbf24 !important;
+        }
+
+        /* Dragged items in workflow slots - white background */
+        body.light-theme #learning-mode-panel [class*="bg-slate-800"] {
+            background-color: #f8fafc !important;
+            border-color: #cbd5e1 !important;
+        }
+
+        /* Step items in workflow - clean white */
+        body.light-theme .workflow-slot > div {
+            background-color: #f8fafc !important;
+        }
+
+        /* Perfect Workflow / Feedback panels - light green instead of gray */
+        body.light-theme #feedback-panel [class*="bg-emerald-950"] {
+            background-color: #d1fae5 !important;
+            border-color: #10b981 !important;
+        }
+        body.light-theme #feedback-panel [class*="bg-rose-950"] {
+            background-color: #ffe4e6 !important;
+            border-color: #f43f5e !important;
+        }
+        body.light-theme #feedback-panel [class*="bg-amber-950"] {
+            background-color: #fef3c7 !important;
+            border-color: #f59e0b !important;
+        }
+        body.light-theme #feedback-panel [class*="bg-cyan-950"] {
+            background-color: #cffafe !important;
+            border-color: #06b6d4 !important;
+        }
+
         @keyframes pulse-blue {
             0%, 100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7); }
             50% { box-shadow: 0 0 0 8px rgba(37, 99, 235, 0); }
@@ -45,7 +359,7 @@
     <!-- Top Header -->
     <header class="border-b border-slate-800 pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 class="text-xl font-bold tracking-wider text-cyan-400">FLASHPOINT // v2.2.0</h1>
+            <h1 class="text-xl font-bold tracking-wider text-cyan-400">FLASHPOINT // v2.3.0</h1>
             <div class="text-xs text-slate-400 mt-1">Automated Security Response in Action</div>
         </div>
         <div class="text-right">
@@ -146,6 +460,9 @@
                 </button>
                 <button id="btn-comparison" onclick="toggleComparisonMode()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-2 px-3 rounded text-xs transition">
                     📊 Enable Comparison Mode
+                </button>
+                <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-2 px-3 rounded text-xs transition">
+                    ☀️ Light Theme
                 </button>
             </div>
 
@@ -956,6 +1273,7 @@
         }
 
         let lastExecutedUseCase = 1; // Track which use case was last run
+        let lightTheme = false; // Track theme state
 
         // Learning Mode State
         let learningMode = false;
@@ -1091,6 +1409,22 @@
                 panel.classList.add('hidden');
                 btn.innerText = '📊 Enable Comparison Mode';
                 btn.classList.replace('bg-cyan-700', 'bg-slate-800');
+            }
+        }
+
+        function toggleTheme() {
+            lightTheme = !lightTheme;
+            const body = document.body;
+            const btn = document.getElementById('btn-theme-toggle');
+
+            if (lightTheme) {
+                body.classList.add('light-theme');
+                btn.innerHTML = '🌙 Dark Theme';
+                btn.classList.replace('bg-slate-800', 'bg-slate-600');
+            } else {
+                body.classList.remove('light-theme');
+                btn.innerHTML = '☀️ Light Theme';
+                btn.classList.replace('bg-slate-600', 'bg-slate-800');
             }
         }
 
