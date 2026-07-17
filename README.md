@@ -69,6 +69,9 @@ FLASHPOINT demonstrates six automated security response scenarios:
 - **Incident Status Tracking** - Visual status indicators (Idle → Detecting → Responding → Resolved)
 - **Remote Control API** - "Magic" demonstrations via curl commands
 - **Collapsible Facilitator Panel** - Maximize screen space during presentations
+- **Dark/Light Theme Toggle** - Professional themes for different presentation environments
+- **Sound Effects** - Audio feedback for incidents and completions (with mute toggle)
+- **Compact Controls** - Space-efficient icon-based configuration buttons
 
 ### Learning Mode Features ⭐ NEW!
 - **Interactive Workflow Builder** - Drag-and-drop interface for building automation workflows
@@ -632,9 +635,25 @@ podman run -d --privileged -p 8080:8080 flashpoint:2.0.0
 ---
 
 ## Version
-FLASHPOINT v2.2.0
+FLASHPOINT v2.4.0
 
 ### Release Notes
+
+**v2.4.0** - Polish & UX Enhancements
+- ✨ NEW: Sound effects system with Web Audio API (alert, success, click sounds)
+- ✨ NEW: Mute/unmute toggle with localStorage persistence
+- 🎨 Enhanced: Compact 3-column configuration button layout
+- 🎨 Enhanced: Cyan branding for Learning Mode toggle
+- 🎨 Enhanced: Icon-only buttons with tooltips for space efficiency
+- 🔧 Fixed: Auto-execution from Learning Mode now works for all use cases
+- 🔧 Fixed: Use Case #3 Ansible button auto-clicks from Learning Mode
+- 🔧 Fixed: Comparison mode scrolls into view when enabled
+
+**v2.3.0** - Theme System
+- ✨ NEW: Dark/Light theme toggle with full support
+- 🎨 Enhanced: Comprehensive light theme CSS for all components
+- 🎨 Enhanced: Color-coded feedback panels in light mode
+- 🎨 Enhanced: High contrast text and backgrounds
 
 **v2.2.0** - Learning Mode Release
 - ✨ NEW: Complete Learning Mode with 6 interactive challenges

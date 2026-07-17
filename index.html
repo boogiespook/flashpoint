@@ -223,7 +223,9 @@
         body.light-theme #btn-comparison {
             color: #0f172a !important;
         }
-        body.light-theme #btn-theme-toggle {
+        body.light-theme #btn-theme-toggle,
+        body.light-theme #btn-comparison,
+        body.light-theme #btn-sound-toggle {
             color: #0f172a !important;
         }
 
@@ -359,7 +361,7 @@
     <!-- Top Header -->
     <header class="border-b border-slate-800 pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 class="text-xl font-bold tracking-wider text-cyan-400">FLASHPOINT // v2.3.0</h1>
+            <h1 class="text-xl font-bold tracking-wider text-cyan-400">FLASHPOINT // v2.4.0</h1>
             <div class="text-xs text-slate-400 mt-1">Automated Security Response in Action</div>
         </div>
         <div class="text-right">
@@ -455,15 +457,22 @@
 
             <!-- Mode Toggle -->
             <div class="space-y-2">
-                <button id="btn-mode-toggle" onclick="toggleMode()" class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 border border-purple-500 text-white font-bold py-2 px-3 rounded text-xs transition">
+                <button id="btn-mode-toggle" onclick="toggleMode()" class="w-full bg-gradient-to-r from-cyan-600 to-cyan-700 hover:from-cyan-500 hover:to-cyan-600 border border-cyan-500 text-white font-bold py-2 px-3 rounded text-xs transition">
                     🎓 Switch to Learning Mode
                 </button>
-                <button id="btn-comparison" onclick="toggleComparisonMode()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-2 px-3 rounded text-xs transition">
-                    📊 Enable Comparison Mode
-                </button>
-                <button id="btn-theme-toggle" onclick="toggleTheme()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-2 px-3 rounded text-xs transition">
-                    ☀️ Light Theme
-                </button>
+
+                <!-- Configuration Options - Compact Grid -->
+                <div class="grid grid-cols-3 gap-1.5">
+                    <button id="btn-comparison" onclick="toggleComparisonMode()" title="Enable Comparison Mode" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-2 px-1 rounded text-lg transition">
+                        📊
+                    </button>
+                    <button id="btn-theme-toggle" onclick="toggleTheme()" title="Light Theme" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-2 px-1 rounded text-lg transition">
+                        ☀️
+                    </button>
+                    <button id="btn-sound-toggle" onclick="toggleSound()" title="Sound Effects: ON" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-2 px-1 rounded text-lg transition">
+                        🔊
+                    </button>
+                </div>
             </div>
 
             <!-- Incident Status Badge -->
@@ -1403,12 +1412,21 @@
             if (comparisonMode) {
                 updateComparisonData(lastExecutedUseCase); // Update with current use case data
                 panel.classList.remove('hidden');
-                btn.innerText = '📊 Disable Comparison Mode';
+                btn.title = 'Disable Comparison Mode';
                 btn.classList.replace('bg-slate-800', 'bg-cyan-700');
+
+                // Play click sound
+                playSound('click');
+
+                // Scroll comparison panel into view
+                setTimeout(() => {
+                    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
             } else {
                 panel.classList.add('hidden');
-                btn.innerText = '📊 Enable Comparison Mode';
+                btn.title = 'Enable Comparison Mode';
                 btn.classList.replace('bg-cyan-700', 'bg-slate-800');
+                playSound('click');
             }
         }
 
@@ -1419,11 +1437,13 @@
 
             if (lightTheme) {
                 body.classList.add('light-theme');
-                btn.innerHTML = '🌙 Dark Theme';
+                btn.innerHTML = '🌙';
+                btn.title = 'Dark Theme';
                 btn.classList.replace('bg-slate-800', 'bg-slate-600');
             } else {
                 body.classList.remove('light-theme');
-                btn.innerHTML = '☀️ Light Theme';
+                btn.innerHTML = '☀️';
+                btn.title = 'Light Theme';
                 btn.classList.replace('bg-slate-600', 'bg-slate-800');
             }
         }
@@ -1788,6 +1808,7 @@
                     descEl.innerText = 'Patch verified & deployed';
                     descEl.className = 'text-[10px] text-emerald-600';
                     stopRemediationTimer(true);
+                    playSound('complete'); // Victory sound!
                     break;
                 case 'COMPLIANCE':
                     iconEl.innerText = '⚖️';
@@ -2096,10 +2117,10 @@
                 serversAudited = true;
 
                 // Auto-click if running from Learning Mode for Use Case #3
-                if (isLearningModeExecution && selectedUseCase === 3) {
+                if (isLearningModeExecution) {
                     setTimeout(() => {
                         appendLog("LEARNING", "Automatically triggering Ansible patch deployment...");
-                        executeAnsiblePatching();
+                        executeAnsiblePatch();
                     }, 2000);
                 }
             }, 10800);
@@ -2537,6 +2558,7 @@
 
         function triggerInject(id) {
             // Show modal instead of immediately triggering
+            playSound('click'); // Button click sound
             showUseCaseModal(id);
         }
 
@@ -2551,6 +2573,9 @@
             const timestamp = formatSimTime(timeElapsedSeconds);
             let messageHtml = '';
             console.log('Executing use case workflow for:', id);
+
+            // Play alert sound when incident triggers
+            playSound('alert');
 
             if (id === 1) {
                 messageHtml = `<div class="bg-amber-950/40 border border-amber-800/60 p-3 rounded-lg text-xs">
@@ -3170,6 +3195,110 @@
                 appendLog("LEARNING", `Student-built workflow executing perfectly! Watch Use Case #${useCaseId} automation in action.`);
             }, 500);
         }
+
+        // ========================================
+        // SOUND EFFECTS SYSTEM
+        // ========================================
+
+        let soundEnabled = localStorage.getItem('flashpoint-sound') !== 'false'; // Default ON
+
+        // Simple sound generator using Web Audio API (no external files needed!)
+        const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSound(type) {
+            if (!soundEnabled) return;
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            switch(type) {
+                case 'alert':
+                    // Alert: Three ascending beeps
+                    oscillator.frequency.setValueAtTime(400, audioContext.currentTime);
+                    oscillator.frequency.setValueAtTime(500, audioContext.currentTime + 0.1);
+                    oscillator.frequency.setValueAtTime(600, audioContext.currentTime + 0.2);
+                    gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                    break;
+
+                case 'success':
+                    // Success: Cheerful ascending tone
+                    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+                    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.1); // E5
+                    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.2); // G5
+                    oscillator.type = 'sine';
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.4);
+                    break;
+
+                case 'click':
+                    // Click: Short blip
+                    oscillator.frequency.setValueAtTime(800, audioContext.currentTime);
+                    oscillator.type = 'sine';
+                    gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.05);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.05);
+                    break;
+
+                case 'complete':
+                    // Complete: Victory fanfare
+                    oscillator.frequency.setValueAtTime(523, audioContext.currentTime); // C5
+                    oscillator.frequency.setValueAtTime(659, audioContext.currentTime + 0.15); // E5
+                    oscillator.frequency.setValueAtTime(784, audioContext.currentTime + 0.3); // G5
+                    oscillator.frequency.setValueAtTime(1047, audioContext.currentTime + 0.45); // C6
+                    oscillator.type = 'triangle';
+                    gainNode.gain.setValueAtTime(0.25, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.6);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.6);
+                    break;
+
+                case 'warning':
+                    // Warning: Low tone
+                    oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
+                    oscillator.type = 'sawtooth';
+                    gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.3);
+                    break;
+            }
+        }
+
+        function toggleSound() {
+            soundEnabled = !soundEnabled;
+            localStorage.setItem('flashpoint-sound', soundEnabled);
+
+            const btn = document.getElementById('btn-sound-toggle');
+            if (soundEnabled) {
+                btn.innerHTML = '🔊';
+                btn.title = 'Sound Effects: ON';
+                playSound('click'); // Play confirmation sound
+            } else {
+                btn.innerHTML = '🔇';
+                btn.title = 'Sound Effects: OFF';
+            }
+        }
+
+        // Initialize button state on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const btn = document.getElementById('btn-sound-toggle');
+            if (soundEnabled) {
+                btn.innerHTML = '🔊';
+                btn.title = 'Sound Effects: ON';
+            } else {
+                btn.innerHTML = '🔇';
+                btn.title = 'Sound Effects: OFF';
+            }
+        });
 
     </script>
 </body>
