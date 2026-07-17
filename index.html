@@ -699,12 +699,15 @@
             resetSim();
         }
 
+        let lastExecutedUseCase = 1; // Track which use case was last run
+
         function toggleComparisonMode() {
             comparisonMode = !comparisonMode;
             const panel = document.getElementById('comparison-panel');
             const btn = document.getElementById('btn-comparison');
 
             if (comparisonMode) {
+                updateComparisonData(lastExecutedUseCase); // Update with current use case data
                 panel.classList.remove('hidden');
                 btn.innerText = '📊 Disable Comparison Mode';
                 btn.classList.replace('bg-slate-800', 'bg-cyan-700');
@@ -713,6 +716,146 @@
                 btn.innerText = '📊 Enable Comparison Mode';
                 btn.classList.replace('bg-cyan-700', 'bg-slate-800');
             }
+        }
+
+        function updateComparisonData(useCaseId) {
+            const comparisonData = {
+                1: {
+                    automated: [
+                        {label: 'CVE Detection:', value: 'Instant'},
+                        {label: 'Lightwell API Check:', value: '~2 seconds'},
+                        {label: 'Patch Verification:', value: '~3 seconds'},
+                        {label: 'Build & Test:', value: '~6 seconds'},
+                        {label: 'Blue/Green Deploy:', value: '~8 seconds'}
+                    ],
+                    automatedTotal: '~19 seconds',
+                    manual: [
+                        {label: 'CVE Discovery:', value: '2-4 hours'},
+                        {label: 'Source Patch Research:', value: '1-2 hours'},
+                        {label: 'Testing & Approval:', value: '4-8 hours'},
+                        {label: 'Manual Build:', value: '30-60 min'},
+                        {label: 'Deployment Window:', value: '2-4 hours'}
+                    ],
+                    manualTotal: '10-18 hours',
+                    impact: 'Automation delivers patched, verified code <span class="text-cyan-400 font-bold">1,890x - 3,400x faster</span> than manual processes, minimizing exposure window from hours to seconds.'
+                },
+                2: {
+                    automated: [
+                        {label: 'Compliance Trigger:', value: 'Instant'},
+                        {label: 'SBOM Generation:', value: '~3 seconds'},
+                        {label: 'Cryptographic Signing:', value: '~2 seconds'},
+                        {label: 'Audit Portal Upload:', value: '~1 second'},
+                        {label: 'Stakeholder Notification:', value: 'Instant'}
+                    ],
+                    automatedTotal: '~6 seconds',
+                    manual: [
+                        {label: 'Manual Audit Request:', value: '1-2 hours'},
+                        {label: 'Dependency Analysis:', value: '3-6 hours'},
+                        {label: 'Document Preparation:', value: '2-4 hours'},
+                        {label: 'Legal Review:', value: '4-8 hours'},
+                        {label: 'Report Distribution:', value: '1-2 hours'}
+                    ],
+                    manualTotal: '11-22 hours',
+                    impact: 'Automated compliance response provides cryptographically-signed SBOMs <span class="text-cyan-400 font-bold">6,600x - 13,200x faster</span> than manual documentation processes.'
+                },
+                3: {
+                    automated: [
+                        {label: 'Server Discovery:', value: '~2 seconds'},
+                        {label: 'Ansible Playbook Exec:', value: '~4 seconds'},
+                        {label: 'Vulnerability Scan:', value: '~3 seconds'},
+                        {label: 'Patch Deployment:', value: '~5 seconds'},
+                        {label: 'Verification & Report:', value: '~2 seconds'}
+                    ],
+                    automatedTotal: '~16 seconds',
+                    manual: [
+                        {label: 'Server Inventory:', value: '2-3 hours'},
+                        {label: 'Manual SSH Access:', value: '4-6 hours'},
+                        {label: 'Patch Testing:', value: '3-5 hours'},
+                        {label: 'Rolling Updates:', value: '6-8 hours'},
+                        {label: 'Manual Verification:', value: '2-3 hours'}
+                    ],
+                    manualTotal: '17-25 hours',
+                    impact: 'Ansible automation patches infrastructure <span class="text-cyan-400 font-bold">3,825x - 5,625x faster</span> than manual server-by-server remediation.'
+                },
+                4: {
+                    automated: [
+                        {label: 'Secret Detection Scan:', value: '~3 seconds'},
+                        {label: 'Vault Secret Generation:', value: '~2 seconds'},
+                        {label: 'Code Injection:', value: '~2 seconds'},
+                        {label: 'Secret Rotation:', value: '~3 seconds'},
+                        {label: 'Verification:', value: '~2 seconds'}
+                    ],
+                    automatedTotal: '~12 seconds',
+                    manual: [
+                        {label: 'Code Review for Secrets:', value: '4-8 hours'},
+                        {label: 'Secret Identification:', value: '2-4 hours'},
+                        {label: 'Manual Vault Setup:', value: '3-5 hours'},
+                        {label: 'Code Refactoring:', value: '6-10 hours'},
+                        {label: 'Testing & Validation:', value: '3-5 hours'}
+                    ],
+                    manualTotal: '18-32 hours',
+                    impact: 'Automated secret sprawl detection and remediation <span class="text-cyan-400 font-bold">5,400x - 9,600x faster</span> than manual code audits and refactoring.'
+                },
+                5: {
+                    automated: [
+                        {label: 'Certificate Discovery:', value: '~2 seconds'},
+                        {label: 'ACME Challenge Prep:', value: '~3 seconds'},
+                        {label: 'Let\'s Encrypt Request:', value: '~5 seconds'},
+                        {label: 'Certificate Deploy:', value: '~3 seconds'},
+                        {label: 'Service Reload:', value: '~2 seconds'}
+                    ],
+                    automatedTotal: '~15 seconds',
+                    manual: [
+                        {label: 'Certificate Monitoring:', value: '2-4 hours'},
+                        {label: 'CA Purchase Process:', value: '4-8 hours'},
+                        {label: 'Manual CSR Generation:', value: '1-2 hours'},
+                        {label: 'Certificate Installation:', value: '2-4 hours'},
+                        {label: 'Service Restart Coordination:', value: '1-2 hours'}
+                    ],
+                    manualTotal: '10-20 hours',
+                    impact: 'ACME automation renews certificates <span class="text-cyan-400 font-bold">2,400x - 4,800x faster</span> than manual CA procurement and installation processes.'
+                },
+                6: {
+                    automated: [
+                        {label: 'CSPM Scan:', value: '~3 seconds'},
+                        {label: 'S3 Bucket Detection:', value: '~2 seconds'},
+                        {label: 'Policy Analysis:', value: '~2 seconds'},
+                        {label: 'Automated Remediation:', value: '~4 seconds'},
+                        {label: 'Compliance Verification:', value: '~2 seconds'}
+                    ],
+                    automatedTotal: '~13 seconds',
+                    manual: [
+                        {label: 'Cloud Resource Audit:', value: '3-6 hours'},
+                        {label: 'Policy Review:', value: '2-4 hours'},
+                        {label: 'Manual Configuration:', value: '4-6 hours'},
+                        {label: 'Testing Access Controls:', value: '3-5 hours'},
+                        {label: 'Documentation Update:', value: '1-2 hours'}
+                    ],
+                    manualTotal: '13-23 hours',
+                    impact: 'Cloud security automation remediates misconfigurations <span class="text-cyan-400 font-bold">3,600x - 6,360x faster</span> than manual cloud infrastructure audits.'
+                }
+            };
+
+            const data = comparisonData[useCaseId];
+
+            // Update automated column
+            let automatedHTML = '';
+            data.automated.forEach(item => {
+                automatedHTML += `<div class="flex justify-between"><span class="text-slate-400">${item.label}</span><span class="text-emerald-400 font-bold">${item.value}</span></div>`;
+            });
+            automatedHTML += `<div class="flex justify-between border-t border-slate-800 pt-2 mt-2"><span class="text-slate-300 font-bold">Total Time:</span><span class="text-emerald-400 font-bold text-lg">${data.automatedTotal}</span></div>`;
+
+            // Update manual column
+            let manualHTML = '';
+            data.manual.forEach(item => {
+                manualHTML += `<div class="flex justify-between"><span class="text-slate-400">${item.label}</span><span class="text-rose-400 font-bold">${item.value}</span></div>`;
+            });
+            manualHTML += `<div class="flex justify-between border-t border-slate-800 pt-2 mt-2"><span class="text-slate-300 font-bold">Total Time:</span><span class="text-rose-400 font-bold text-lg">${data.manualTotal}</span></div>`;
+
+            // Update DOM
+            document.querySelector('#comparison-panel .grid > div:nth-child(1) .space-y-2').innerHTML = automatedHTML;
+            document.querySelector('#comparison-panel .grid > div:nth-child(2) .space-y-2').innerHTML = manualHTML;
+            document.querySelector('#comparison-panel .bg-cyan-950\\/30 .text-\\[11px\\]').innerHTML = data.impact;
         }
 
         let facilitatorPanelVisible = true;
@@ -1672,6 +1815,7 @@
                 return;
             }
             activeInjects.push(id);
+            lastExecutedUseCase = id; // Track for comparison mode
             const timestamp = formatSimTime(timeElapsedSeconds);
             let messageHtml = '';
             console.log('Executing use case workflow for:', id);
