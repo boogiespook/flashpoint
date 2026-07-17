@@ -45,7 +45,7 @@
     <!-- Top Header -->
     <header class="border-b border-slate-800 pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 class="text-xl font-bold tracking-wider text-cyan-400">FLASHPOINT // v2.0.0</h1>
+            <h1 class="text-xl font-bold tracking-wider text-cyan-400">FLASHPOINT // v2.2.0</h1>
             <div class="text-xs text-slate-400 mt-1">Automated Security Response in Action</div>
         </div>
         <div class="text-right">
@@ -150,8 +150,11 @@
                 </div>
             </div>
 
-            <!-- Comparison Mode Toggle -->
-            <div>
+            <!-- Mode Toggle -->
+            <div class="space-y-2">
+                <button id="btn-mode-toggle" onclick="toggleMode()" class="w-full bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-500 hover:to-purple-600 border border-purple-500 text-white font-bold py-2 px-3 rounded text-xs transition">
+                    🎓 Switch to Learning Mode
+                </button>
                 <button id="btn-comparison" onclick="toggleComparisonMode()" class="w-full bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-300 font-bold py-2 px-3 rounded text-xs transition">
                     📊 Enable Comparison Mode
                 </button>
@@ -596,6 +599,266 @@
         </div>
     </div>
 
+    <!-- Learning Mode Panel (Hidden by default) -->
+    <div id="learning-mode-panel" class="hidden fixed inset-0 bg-slate-950/95 backdrop-blur-sm z-50 overflow-y-auto">
+        <div class="container mx-auto p-6 max-w-7xl">
+            <!-- Header -->
+            <div class="flex justify-between items-center mb-6 border-b border-purple-800/50 pb-4">
+                <div>
+                    <h1 class="text-2xl font-bold text-purple-400">🎓 LEARNING MODE</h1>
+                    <p class="text-sm text-slate-400 mt-1" id="learning-subtitle">Select your learning challenge</p>
+                </div>
+                <button onclick="exitLearningMode()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded text-sm font-bold transition">
+                    ← Back to Demo Mode
+                </button>
+            </div>
+
+            <!-- Use Case Selector (shown first) -->
+            <div id="use-case-selector" class="hidden">
+                <div class="text-center mb-8">
+                    <h2 class="text-xl font-bold text-slate-200 mb-2">Select Your Learning Challenge</h2>
+                    <p class="text-sm text-slate-400">Choose a use case to practice building automated security workflows</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <!-- Use Case #1 -->
+                    <button onclick="selectUseCase(1)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                        <div class="text-4xl mb-3">📦</div>
+                        <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #1</h3>
+                        <p class="text-sm text-slate-300 font-bold mb-2">Supply Chain Threat</p>
+                        <p class="text-xs text-slate-400">CVE detection and automated patching workflow</p>
+                    </button>
+
+                    <!-- Use Case #2 -->
+                    <button onclick="selectUseCase(2)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                        <div class="text-4xl mb-3">⚖️</div>
+                        <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #2</h3>
+                        <p class="text-sm text-slate-300 font-bold mb-2">Compliance Response</p>
+                        <p class="text-xs text-slate-400">SBOM generation and regulatory compliance</p>
+                    </button>
+
+                    <!-- Use Case #3 -->
+                    <button onclick="selectUseCase(3)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                        <div class="text-4xl mb-3">🔧</div>
+                        <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #3</h3>
+                        <p class="text-sm text-slate-300 font-bold mb-2">Infrastructure Audit</p>
+                        <p class="text-xs text-slate-400">Ansible automation for server patching</p>
+                    </button>
+
+                    <!-- Use Case #4 -->
+                    <button onclick="selectUseCase(4)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                        <div class="text-4xl mb-3">🔐</div>
+                        <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #4</h3>
+                        <p class="text-sm text-slate-300 font-bold mb-2">Secret Sprawl Detection</p>
+                        <p class="text-xs text-slate-400">HashiCorp Vault secret rotation</p>
+                    </button>
+
+                    <!-- Use Case #5 -->
+                    <button onclick="selectUseCase(5)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                        <div class="text-4xl mb-3">📜</div>
+                        <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #5</h3>
+                        <p class="text-sm text-slate-300 font-bold mb-2">Certificate Expiration</p>
+                        <p class="text-xs text-slate-400">Let's Encrypt ACME automation</p>
+                    </button>
+
+                    <!-- Use Case #6 -->
+                    <button onclick="selectUseCase(6)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                        <div class="text-4xl mb-3">☁️</div>
+                        <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #6</h3>
+                        <p class="text-sm text-slate-300 font-bold mb-2">Cloud Misconfiguration</p>
+                        <p class="text-xs text-slate-400">AWS CSPM and S3 remediation</p>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Workflow Learning Content (shown after selection) -->
+            <div id="workflow-learning-content" class="hidden">
+
+            <!-- Scenario Description -->
+            <div id="scenario-card" class="bg-gradient-to-r from-amber-950/40 to-amber-900/20 border border-amber-800/60 rounded-xl p-5 mb-6">
+                <h2 class="text-lg font-bold text-amber-400 mb-3">📦 Use Case #1: Supply Chain Threat - CVE-2026-1234</h2>
+                <p class="text-slate-300 text-sm leading-relaxed mb-3">
+                    A critical vulnerability (CVE-2026-1234) has been discovered in the <code class="bg-slate-900/60 px-2 py-0.5 rounded text-cyan-400">lib-crypto-core v2.4.1-rc1</code> package used in your production application.
+                    Your goal is to create an automated workflow that detects, patches, tests, and deploys the fix without human intervention.
+                </p>
+                <div class="bg-slate-900/60 border border-slate-700 rounded-lg p-3">
+                    <h3 class="text-xs font-bold text-slate-300 mb-2 uppercase">Your Mission:</h3>
+                    <p class="text-xs text-slate-400">Arrange the workflow steps in the correct order to create a fully automated security response pipeline. Include only the necessary steps and exclude manual processes that slow down remediation.</p>
+                </div>
+            </div>
+
+            <!-- Main Learning Interface -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+                <!-- LEFT: Available Steps Library -->
+                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
+                    <h3 class="text-sm font-bold text-cyan-400 mb-4 uppercase tracking-wider flex items-center">
+                        <span class="inline-block w-3 h-3 rounded-full bg-cyan-400 mr-2"></span>
+                        Available Steps
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-4">Drag the correct steps to build your automated workflow. Some are decoys!</p>
+
+                    <div id="step-library" class="space-y-2">
+                        <!-- All steps look identical - students must think! -->
+                        <div class="step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition" draggable="true" data-step-id="cve-detection" data-correct="true">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🔍</span>
+                                <div>
+                                    <div class="font-bold text-cyan-400 text-sm">CVE Detection</div>
+                                    <div class="text-[10px] text-slate-400">Automated vulnerability scanning</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition" draggable="true" data-step-id="lightwell-api" data-correct="true">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🔌</span>
+                                <div>
+                                    <div class="font-bold text-cyan-400 text-sm">Lightwell API Check</div>
+                                    <div class="text-[10px] text-slate-400">Query for patched package version</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition" draggable="true" data-step-id="patch-verify" data-correct="true">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">✅</span>
+                                <div>
+                                    <div class="font-bold text-cyan-400 text-sm">Patch Verification</div>
+                                    <div class="text-[10px] text-slate-400">Cryptographic signature validation</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition" draggable="true" data-step-id="build-test" data-correct="true">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🔨</span>
+                                <div>
+                                    <div class="font-bold text-cyan-400 text-sm">Build & Test</div>
+                                    <div class="text-[10px] text-slate-400">Automated CI/CD pipeline</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition" draggable="true" data-step-id="blue-green" data-correct="true">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🚀</span>
+                                <div>
+                                    <div class="font-bold text-cyan-400 text-sm">Blue/Green Deploy</div>
+                                    <div class="text-[10px] text-slate-400">Zero-downtime deployment</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition" draggable="true" data-step-id="email-team" data-correct="false">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">📧</span>
+                                <div>
+                                    <div class="font-bold text-cyan-400 text-sm">Email Security Team</div>
+                                    <div class="text-[10px] text-slate-400">Manual notification process</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition" draggable="true" data-step-id="manual-review" data-correct="false">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">👤</span>
+                                <div>
+                                    <div class="font-bold text-cyan-400 text-sm">Manual Code Review</div>
+                                    <div class="text-[10px] text-slate-400">Human approval required</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition" draggable="true" data-step-id="restart-all" data-correct="false">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">⚠️</span>
+                                <div>
+                                    <div class="font-bold text-cyan-400 text-sm">Restart All Servers</div>
+                                    <div class="text-[10px] text-slate-400">Causes downtime</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition" draggable="true" data-step-id="change-ticket" data-correct="false">
+                            <div class="flex items-center">
+                                <span class="text-2xl mr-3">🎫</span>
+                                <div>
+                                    <div class="font-bold text-cyan-400 text-sm">Create Change Ticket</div>
+                                    <div class="text-[10px] text-slate-400">Manual approval workflow</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT: Workflow Builder -->
+                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-5">
+                    <h3 class="text-sm font-bold text-purple-400 mb-4 uppercase tracking-wider flex items-center">
+                        <span class="inline-block w-3 h-3 rounded-full bg-purple-400 mr-2"></span>
+                        Your Workflow
+                    </h3>
+                    <p class="text-xs text-slate-400 mb-4">Drop the steps here in the correct order (5 steps required)</p>
+
+                    <div id="workflow-builder" class="space-y-3 mb-6">
+                        <div class="workflow-slot min-h-16 border-2 border-dashed border-slate-700 rounded-lg bg-slate-950/40 hover:border-purple-500 transition p-3" data-slot="1">
+                            <span class="text-slate-600 text-sm">Step 1: Drop here</span>
+                        </div>
+                        <div class="workflow-slot min-h-16 border-2 border-dashed border-slate-700 rounded-lg bg-slate-950/40 hover:border-purple-500 transition p-3" data-slot="2">
+                            <span class="text-slate-600 text-sm">Step 2: Drop here</span>
+                        </div>
+                        <div class="workflow-slot min-h-16 border-2 border-dashed border-slate-700 rounded-lg bg-slate-950/40 hover:border-purple-500 transition p-3" data-slot="3">
+                            <span class="text-slate-600 text-sm">Step 3: Drop here</span>
+                        </div>
+                        <div class="workflow-slot min-h-16 border-2 border-dashed border-slate-700 rounded-lg bg-slate-950/40 hover:border-purple-500 transition p-3" data-slot="4">
+                            <span class="text-slate-600 text-sm">Step 4: Drop here</span>
+                        </div>
+                        <div class="workflow-slot min-h-16 border-2 border-dashed border-slate-700 rounded-lg bg-slate-950/40 hover:border-purple-500 transition p-3" data-slot="5">
+                            <span class="text-slate-600 text-sm">Step 5: Drop here</span>
+                        </div>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex gap-3">
+                        <button id="btn-validate" onclick="validateWorkflow()" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-3 px-4 rounded text-sm transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            ✓ Validate Workflow
+                        </button>
+                        <button id="btn-run-workflow" onclick="runLearningWorkflow()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3 px-4 rounded text-sm transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                            ▶ Run My Workflow
+                        </button>
+                        <button onclick="clearWorkflow()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-bold py-3 px-4 rounded text-sm transition">
+                            🔄
+                        </button>
+                    </div>
+
+                    <!-- Feedback Panel -->
+                    <div id="feedback-panel" class="mt-6 hidden">
+                        <!-- Dynamically populated with validation results -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Statistics & Scoring -->
+            <div class="mt-6 grid grid-cols-3 gap-4">
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-black text-cyan-400" id="attempts-count">0</div>
+                    <div class="text-xs text-slate-400 uppercase">Attempts</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-black text-emerald-400" id="correct-steps">0/5</div>
+                    <div class="text-xs text-slate-400 uppercase">Correct Steps</div>
+                </div>
+                <div class="bg-slate-900/60 border border-slate-800 rounded-lg p-4 text-center">
+                    <div class="text-2xl font-black text-purple-400" id="score">0%</div>
+                    <div class="text-xs text-slate-400 uppercase">Score</div>
+                </div>
+            </div>
+
+            </div>
+            <!-- End of workflow-learning-content -->
+        </div>
+    </div>
+
     <!-- Core Simulation Engine Logic -->
     <script>
         let currentScenario = 'oss_dependency';
@@ -700,6 +963,126 @@
         }
 
         let lastExecutedUseCase = 1; // Track which use case was last run
+
+        // Learning Mode State
+        let learningMode = false;
+        let learningAttempts = 0;
+        let workflowSteps = [null, null, null, null, null];
+        let draggedElement = null;
+        let isLearningModeExecution = false; // Track if workflow is running from Learning Mode
+        let selectedUseCase = null; // Track which use case is selected for learning
+
+        // Workflow definitions for all 6 use cases
+        const useCaseWorkflows = {
+            1: {
+                title: '📦 Supply Chain Threat',
+                subtitle: 'CVE-2026-1234 Detection & Remediation',
+                description: 'A critical vulnerability (CVE-2026-1234) has been discovered in the <code class="bg-slate-900/60 px-2 py-0.5 rounded text-cyan-400">lib-crypto-core v2.4.1-rc1</code> package used in your production application. Your goal is to create an automated workflow that detects, patches, tests, and deploys the fix without human intervention.',
+                mission: 'Arrange the workflow steps in the correct order to create a fully automated security response pipeline. Include only the necessary steps and exclude manual processes that slow down remediation.',
+                correctWorkflow: ['cve-detection', 'lightwell-api', 'patch-verify', 'build-test', 'blue-green'],
+                steps: [
+                    { id: 'cve-detection', correct: true, icon: '🔍', title: 'CVE Detection', desc: 'Automated vulnerability scanning' },
+                    { id: 'lightwell-api', correct: true, icon: '🔌', title: 'Lightwell API Check', desc: 'Query for patched package version' },
+                    { id: 'patch-verify', correct: true, icon: '✅', title: 'Patch Verification', desc: 'Cryptographic signature validation' },
+                    { id: 'build-test', correct: true, icon: '🔨', title: 'Build & Test', desc: 'Automated CI/CD pipeline' },
+                    { id: 'blue-green', correct: true, icon: '🚀', title: 'Blue/Green Deploy', desc: 'Zero-downtime deployment' },
+                    { id: 'email-team', correct: false, icon: '📧', title: 'Email Security Team', desc: 'Manual notification process' },
+                    { id: 'manual-review', correct: false, icon: '👤', title: 'Manual Code Review', desc: 'Human approval required' },
+                    { id: 'restart-all', correct: false, icon: '⚠️', title: 'Restart All Servers', desc: 'Causes downtime' },
+                    { id: 'change-ticket', correct: false, icon: '🎫', title: 'Create Change Ticket', desc: 'Manual approval workflow' }
+                ]
+            },
+            2: {
+                title: '⚖️ Compliance & Media Pressure',
+                subtitle: 'SBOM Generation & Regulatory Response',
+                description: 'Federal compliance auditor demands immediate proof of CVE remediation status. Tech journalist from TechCrunch is seeking a statement on your supply chain security posture. You have <span class="text-amber-400 font-bold">60 minutes</span> to respond with cryptographically-signed evidence.',
+                mission: 'Create an automated compliance response workflow that generates, signs, and delivers a complete SBOM (Software Bill of Materials) to regulators and media without manual intervention.',
+                correctWorkflow: ['compliance-trigger', 'sbom-gen', 'crypto-sign', 'audit-upload', 'notify-stakeholders'],
+                steps: [
+                    { id: 'compliance-trigger', correct: true, icon: '📢', title: 'Compliance Trigger', desc: 'Detect regulatory inquiry' },
+                    { id: 'sbom-gen', correct: true, icon: '📋', title: 'SBOM Generation', desc: 'Automated dependency analysis' },
+                    { id: 'crypto-sign', correct: true, icon: '🔐', title: 'Cryptographic Signing', desc: 'Digital signature with org key' },
+                    { id: 'audit-upload', correct: true, icon: '☁️', title: 'Audit Portal Upload', desc: 'Publish to compliance portal' },
+                    { id: 'notify-stakeholders', correct: true, icon: '📨', title: 'Stakeholder Notification', desc: 'Auto-notify auditors & media' },
+                    { id: 'manual-sbom', correct: false, icon: '📝', title: 'Manual SBOM Creation', desc: 'Spreadsheet-based tracking' },
+                    { id: 'legal-review', correct: false, icon: '⚖️', title: 'Legal Team Review', desc: 'Wait for legal approval' },
+                    { id: 'email-response', correct: false, icon: '✉️', title: 'Email Response', desc: 'Manual email to auditor' },
+                    { id: 'meeting-schedule', correct: false, icon: '📅', title: 'Schedule Meeting', desc: 'Calendar-based response' }
+                ]
+            },
+            3: {
+                title: '🔧 Infrastructure Audit',
+                subtitle: 'Ansible Automation Platform Server Patching',
+                description: 'Security audit reveals 25 RHEL servers with outdated access controls and unpatched vulnerabilities. Manual SSH access and patching would take <span class="text-rose-400 font-bold">17-25 hours</span> and risk configuration drift across the fleet.',
+                mission: 'Build an automated infrastructure remediation workflow using Ansible that discovers, patches, and verifies all servers simultaneously with zero downtime.',
+                correctWorkflow: ['server-discovery', 'ansible-playbook', 'vuln-scan', 'patch-deploy', 'verification'],
+                steps: [
+                    { id: 'server-discovery', correct: true, icon: '🔎', title: 'Server Discovery', desc: 'Automated inventory scan' },
+                    { id: 'ansible-playbook', correct: true, icon: '🤖', title: 'Ansible Playbook Execution', desc: 'Orchestrated automation' },
+                    { id: 'vuln-scan', correct: true, icon: '🛡️', title: 'Vulnerability Scan', desc: 'Automated security check' },
+                    { id: 'patch-deploy', correct: true, icon: '⚙️', title: 'Patch Deployment', desc: 'Parallel server updates' },
+                    { id: 'verification', correct: true, icon: '✔️', title: 'Verification & Report', desc: 'Automated compliance check' },
+                    { id: 'ssh-manual', correct: false, icon: '💻', title: 'Manual SSH Access', desc: 'Server-by-server login' },
+                    { id: 'maintenance-window', correct: false, icon: '🕐', title: 'Schedule Maintenance Window', desc: 'Downtime required' },
+                    { id: 'backup-first', correct: false, icon: '💾', title: 'Manual Backup Each Server', desc: 'Time-consuming snapshots' },
+                    { id: 'testing-phase', correct: false, icon: '🧪', title: 'Manual Testing Phase', desc: 'Human verification' }
+                ]
+            },
+            4: {
+                title: '🔐 Secret Sprawl Detection',
+                subtitle: 'HashiCorp Vault Secret Rotation',
+                description: 'Code audit discovers hardcoded API keys, database passwords, and credentials scattered across 15 repositories. These secrets have been committed to version control and may be exposed. <span class="text-rose-400 font-bold">Immediate rotation required</span>.',
+                mission: 'Design an automated secret detection and remediation workflow that scans code, generates new secrets in Vault, rotates credentials, and updates applications without downtime.',
+                correctWorkflow: ['secret-detection', 'vault-gen', 'code-injection', 'secret-rotation', 'verify-rotation'],
+                steps: [
+                    { id: 'secret-detection', correct: true, icon: '🔍', title: 'Secret Detection Scan', desc: 'Automated code scanning' },
+                    { id: 'vault-gen', correct: true, icon: '🔑', title: 'Vault Secret Generation', desc: 'Generate new credentials' },
+                    { id: 'code-injection', correct: true, icon: '💉', title: 'Code Injection', desc: 'Replace hardcoded secrets' },
+                    { id: 'secret-rotation', correct: true, icon: '🔄', title: 'Secret Rotation', desc: 'Update all services' },
+                    { id: 'verify-rotation', correct: true, icon: '✅', title: 'Verification', desc: 'Confirm secret updates' },
+                    { id: 'manual-find', correct: false, icon: '🔎', title: 'Manual Code Review', desc: 'Grep through repositories' },
+                    { id: 'spreadsheet-track', correct: false, icon: '📊', title: 'Spreadsheet Tracking', desc: 'Excel-based secret list' },
+                    { id: 'coordinate-teams', correct: false, icon: '👥', title: 'Coordinate with Teams', desc: 'Manual update scheduling' },
+                    { id: 'restart-apps', correct: false, icon: '🔁', title: 'Restart All Applications', desc: 'Downtime required' }
+                ]
+            },
+            5: {
+                title: '📜 Certificate Expiration Crisis',
+                subtitle: 'Let\'s Encrypt ACME Automated Renewal',
+                description: 'SSL certificate for production domain expires in <span class="text-rose-400 font-bold">48 hours</span>. Users will see security warnings and lose access. Manual CA procurement takes 10-20 hours including purchase, CSR generation, installation, and testing.',
+                mission: 'Build an automated certificate lifecycle workflow using Let\'s Encrypt ACME protocol that renews, deploys, and validates certificates with zero manual intervention or downtime.',
+                correctWorkflow: ['cert-discovery', 'acme-challenge', 'letsencrypt-request', 'cert-deploy', 'service-reload'],
+                steps: [
+                    { id: 'cert-discovery', correct: true, icon: '🔍', title: 'Certificate Discovery', desc: 'Scan for expiring certs' },
+                    { id: 'acme-challenge', correct: true, icon: '🎯', title: 'ACME Challenge Preparation', desc: 'Domain validation setup' },
+                    { id: 'letsencrypt-request', correct: true, icon: '📜', title: 'Let\'s Encrypt Request', desc: 'Automated cert issuance' },
+                    { id: 'cert-deploy', correct: true, icon: '🚀', title: 'Certificate Deployment', desc: 'Install new certificate' },
+                    { id: 'service-reload', correct: true, icon: '🔄', title: 'Service Reload', desc: 'Graceful service restart' },
+                    { id: 'purchase-cert', correct: false, icon: '💰', title: 'Purchase from CA', desc: 'Manual procurement process' },
+                    { id: 'manual-csr', correct: false, icon: '🔐', title: 'Generate CSR Manually', desc: 'OpenSSL command line' },
+                    { id: 'schedule-downtime', correct: false, icon: '⏰', title: 'Schedule Downtime', desc: 'Maintenance window required' },
+                    { id: 'test-manually', correct: false, icon: '🧪', title: 'Manual Testing', desc: 'Browser verification' }
+                ]
+            },
+            6: {
+                title: '☁️ Cloud Misconfiguration Remediation',
+                subtitle: 'AWS CSPM & S3 Bucket Security',
+                description: 'Cloud Security Posture Management (CSPM) scan detects <span class="text-rose-400 font-bold">12 publicly exposed S3 buckets</span> containing sensitive customer data, API logs, and internal documentation. Data breach risk is critical.',
+                mission: 'Create an automated cloud remediation workflow that detects misconfigurations, applies security policies, remediates access controls, and verifies compliance across AWS infrastructure.',
+                correctWorkflow: ['cspm-scan', 's3-detection', 'policy-analysis', 'auto-remediation', 'compliance-verify'],
+                steps: [
+                    { id: 'cspm-scan', correct: true, icon: '🔍', title: 'CSPM Scan', desc: 'Cloud security scanning' },
+                    { id: 's3-detection', correct: true, icon: '🪣', title: 'S3 Bucket Detection', desc: 'Identify public buckets' },
+                    { id: 'policy-analysis', correct: true, icon: '📋', title: 'Policy Analysis', desc: 'Evaluate IAM policies' },
+                    { id: 'auto-remediation', correct: true, icon: '🔧', title: 'Automated Remediation', desc: 'Fix bucket permissions' },
+                    { id: 'compliance-verify', correct: true, icon: '✅', title: 'Compliance Verification', desc: 'Validate security posture' },
+                    { id: 'manual-console', correct: false, icon: '🖱️', title: 'AWS Console Click-Ops', desc: 'Manual GUI configuration' },
+                    { id: 'create-ticket', correct: false, icon: '🎫', title: 'Create Jira Ticket', desc: 'Wait for ops team' },
+                    { id: 'audit-manually', correct: false, icon: '📊', title: 'Manual Audit', desc: 'Spreadsheet tracking' },
+                    { id: 'email-owners', correct: false, icon: '📧', title: 'Email Resource Owners', desc: 'Manual notification' }
+                ]
+            }
+        };
 
         function toggleComparisonMode() {
             comparisonMode = !comparisonMode;
@@ -1244,6 +1627,15 @@
                 // Reveal the CI/CD pipeline start trigger
                 btnCicd.classList.remove('hidden');
                 updateMetricsManual(95, 8, 15);
+
+                // Auto-click CI/CD if running from Learning Mode
+                if (isLearningModeExecution) {
+                    setTimeout(() => {
+                        appendLog("LEARNING", "Automatically triggering CI/CD pipeline...");
+                        executeDeployAgent();
+                        isLearningModeExecution = false; // Reset flag
+                    }, 2000);
+                }
             }, 7000);
         }
 
@@ -1291,6 +1683,14 @@
                 // Show remediation button if vulnerable
                 if (!infrastructure.patchDeployed) {
                     btnRemediation.classList.remove('hidden');
+
+                    // Auto-click if running from Learning Mode for Use Case #2
+                    if (isLearningModeExecution && selectedUseCase === 2) {
+                        setTimeout(() => {
+                            appendLog("LEARNING", "Automatically checking Lightwell for remediation...");
+                            checkLightwellRemediation();
+                        }, 2000);
+                    }
                 }
             }, 5600);
 
@@ -1370,6 +1770,14 @@
                 appendLog("ANSIBLE", "Audit complete. 7 servers require patching.");
                 btnAnsible.classList.remove('hidden');
                 serversAudited = true;
+
+                // Auto-click if running from Learning Mode for Use Case #3
+                if (isLearningModeExecution && selectedUseCase === 3) {
+                    setTimeout(() => {
+                        appendLog("LEARNING", "Automatically triggering Ansible patch deployment...");
+                        executeAnsiblePatching();
+                    }, 2000);
+                }
             }, 10800);
         }
 
@@ -2066,6 +2474,379 @@
             resetRemediationTimer();
             calculateSystemState();
         }
+        // ========================================
+        // LEARNING MODE FUNCTIONS
+        // ========================================
+
+        function toggleMode() {
+            learningMode = !learningMode;
+            const panel = document.getElementById('learning-mode-panel');
+            const btn = document.getElementById('btn-mode-toggle');
+
+            if (learningMode) {
+                panel.classList.remove('hidden');
+                btn.innerHTML = '📺 Switch to Demo Mode';
+                btn.classList.remove('from-purple-600', 'to-purple-700', 'hover:from-purple-500', 'hover:to-purple-600', 'border-purple-500');
+                btn.classList.add('from-cyan-600', 'to-cyan-700', 'hover:from-cyan-500', 'hover:to-cyan-600', 'border-cyan-500');
+
+                // Show use case selector
+                showUseCaseSelector();
+            } else {
+                panel.classList.add('hidden');
+                btn.innerHTML = '🎓 Switch to Learning Mode';
+                btn.classList.remove('from-cyan-600', 'to-cyan-700', 'hover:from-cyan-500', 'hover:to-cyan-600', 'border-cyan-500');
+                btn.classList.add('from-purple-600', 'to-purple-700', 'hover:from-purple-500', 'hover:to-purple-600', 'border-purple-500');
+
+                // Reset selection
+                selectedUseCase = null;
+            }
+        }
+
+        function showUseCaseSelector() {
+            document.getElementById('use-case-selector').classList.remove('hidden');
+            document.getElementById('workflow-learning-content').classList.add('hidden');
+            document.getElementById('learning-subtitle').innerText = 'Select your learning challenge';
+        }
+
+        function selectUseCase(id) {
+            selectedUseCase = id;
+            const useCase = useCaseWorkflows[id];
+
+            // Hide selector, show learning content
+            document.getElementById('use-case-selector').classList.add('hidden');
+            document.getElementById('workflow-learning-content').classList.remove('hidden');
+            document.getElementById('learning-subtitle').innerText = `Build the correct automated workflow for Use Case #${id}`;
+
+            // Update scenario description
+            const scenarioCard = document.getElementById('scenario-card');
+            scenarioCard.innerHTML = `
+                <h2 class="text-lg font-bold text-amber-400 mb-3">${useCase.title}</h2>
+                <p class="text-slate-300 text-sm leading-relaxed mb-3">${useCase.description}</p>
+                <div class="bg-slate-900/60 border border-slate-700 rounded-lg p-3">
+                    <h3 class="text-xs font-bold text-slate-300 mb-2 uppercase">Your Mission:</h3>
+                    <p class="text-xs text-slate-400">${useCase.mission}</p>
+                </div>
+            `;
+
+            // Render steps and initialize
+            renderRandomizedSteps();
+            initializeDragAndDrop();
+            resetLearningState();
+        }
+
+        function exitLearningMode() {
+            learningMode = false;
+            selectedUseCase = null;
+
+            const panel = document.getElementById('learning-mode-panel');
+            const btn = document.getElementById('btn-mode-toggle');
+
+            panel.classList.add('hidden');
+            btn.innerHTML = '🎓 Switch to Learning Mode';
+            btn.classList.remove('from-cyan-600', 'to-cyan-700', 'hover:from-cyan-500', 'hover:to-cyan-600', 'border-cyan-500');
+            btn.classList.add('from-purple-600', 'to-purple-700', 'hover:from-purple-500', 'hover:to-purple-600', 'border-purple-500');
+        }
+
+        function resetLearningState() {
+            learningAttempts = 0;
+            workflowSteps = [null, null, null, null, null];
+            document.getElementById('attempts-count').innerText = '0';
+            document.getElementById('correct-steps').innerText = '0/5';
+            document.getElementById('score').innerText = '0%';
+            document.getElementById('feedback-panel').classList.add('hidden');
+            clearWorkflow();
+        }
+
+        function renderRandomizedSteps() {
+            if (!selectedUseCase) return;
+
+            const useCase = useCaseWorkflows[selectedUseCase];
+
+            // Shuffle the available steps using Fisher-Yates algorithm
+            const shuffled = [...useCase.steps];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+
+            // Render shuffled steps
+            const library = document.getElementById('step-library');
+            library.innerHTML = '';
+
+            shuffled.forEach(step => {
+                const stepDiv = document.createElement('div');
+                stepDiv.className = 'step-item cursor-move bg-slate-800/60 border-l-4 border-cyan-600 p-3 rounded hover:bg-slate-700/60 transition';
+                stepDiv.draggable = true;
+                stepDiv.setAttribute('data-step-id', step.id);
+                stepDiv.setAttribute('data-correct', step.correct);
+                stepDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <span class="text-2xl mr-3">${step.icon}</span>
+                        <div>
+                            <div class="font-bold text-cyan-400 text-sm">${step.title}</div>
+                            <div class="text-[10px] text-slate-400">${step.desc}</div>
+                        </div>
+                    </div>
+                `;
+                library.appendChild(stepDiv);
+            });
+        }
+
+        function initializeDragAndDrop() {
+            // Setup drag events for step items
+            const stepItems = document.querySelectorAll('.step-item');
+            stepItems.forEach(item => {
+                item.addEventListener('dragstart', handleDragStart);
+                item.addEventListener('dragend', handleDragEnd);
+            });
+
+            // Setup drop zones
+            const slots = document.querySelectorAll('.workflow-slot');
+            slots.forEach(slot => {
+                slot.addEventListener('dragover', handleDragOver);
+                slot.addEventListener('drop', handleDrop);
+                slot.addEventListener('dragleave', handleDragLeave);
+            });
+        }
+
+        function handleDragStart(e) {
+            draggedElement = e.currentTarget;
+            e.currentTarget.classList.add('opacity-50');
+            e.dataTransfer.effectAllowed = 'copy';
+            e.dataTransfer.setData('text/html', e.currentTarget.innerHTML);
+            e.dataTransfer.setData('step-id', e.currentTarget.getAttribute('data-step-id'));
+            e.dataTransfer.setData('is-correct', e.currentTarget.getAttribute('data-correct'));
+        }
+
+        function handleDragEnd(e) {
+            e.currentTarget.classList.remove('opacity-50');
+        }
+
+        function handleDragOver(e) {
+            if (e.preventDefault) {
+                e.preventDefault();
+            }
+            e.dataTransfer.dropEffect = 'copy';
+            e.currentTarget.classList.add('border-purple-400', 'bg-purple-950/20');
+            return false;
+        }
+
+        function handleDragLeave(e) {
+            e.currentTarget.classList.remove('border-purple-400', 'bg-purple-950/20');
+        }
+
+        function handleDrop(e) {
+            if (e.stopPropagation) {
+                e.stopPropagation();
+            }
+            e.preventDefault();
+
+            const slot = e.currentTarget;
+            slot.classList.remove('border-purple-400', 'bg-purple-950/20');
+
+            const stepId = e.dataTransfer.getData('step-id');
+            const isCorrect = e.dataTransfer.getData('is-correct');
+            const slotIndex = parseInt(slot.getAttribute('data-slot')) - 1;
+
+            // Create dropped item - full width
+            const stepHtml = e.dataTransfer.getData('text/html');
+            slot.innerHTML = `
+                <div class="flex items-center justify-between p-3 bg-slate-800/60 rounded border border-slate-700 w-full">
+                    <div class="flex items-center flex-1">
+                        ${stepHtml}
+                    </div>
+                    <button onclick="removeStep(${slotIndex}, '${stepId}')" class="ml-3 text-rose-400 hover:text-rose-300 text-xl flex-shrink-0">×</button>
+                </div>
+            `;
+
+            // Remove from available steps library
+            const stepElement = document.querySelector(`[data-step-id="${stepId}"]`);
+            if (stepElement && stepElement.parentElement.id === 'step-library') {
+                stepElement.classList.add('opacity-30', 'pointer-events-none');
+                stepElement.draggable = false;
+            }
+
+            // Store step in workflow
+            workflowSteps[slotIndex] = {
+                id: stepId,
+                correct: isCorrect === 'true'
+            };
+
+            updateWorkflowButtons();
+            return false;
+        }
+
+        function removeStep(slotIndex, stepId) {
+            const slot = document.querySelector(`.workflow-slot[data-slot="${slotIndex + 1}"]`);
+            slot.innerHTML = `<span class="text-slate-600 text-sm">Step ${slotIndex + 1}: Drop here</span>`;
+
+            // Restore step to available steps library
+            const stepElement = document.querySelector(`#step-library [data-step-id="${stepId}"]`);
+            if (stepElement) {
+                stepElement.classList.remove('opacity-30', 'pointer-events-none');
+                stepElement.draggable = true;
+            }
+
+            workflowSteps[slotIndex] = null;
+            updateWorkflowButtons();
+        }
+
+        function updateWorkflowButtons() {
+            const filledSlots = workflowSteps.filter(s => s !== null).length;
+            const validateBtn = document.getElementById('btn-validate');
+            const runBtn = document.getElementById('btn-run-workflow');
+
+            if (filledSlots === 5) {
+                validateBtn.disabled = false;
+            } else {
+                validateBtn.disabled = true;
+                runBtn.disabled = true;
+            }
+
+            // Update stats
+            document.getElementById('correct-steps').innerText = `${filledSlots}/5`;
+        }
+
+        function clearWorkflow() {
+            // Restore all steps to available library
+            const allSteps = document.querySelectorAll('#step-library .step-item');
+            allSteps.forEach(step => {
+                step.classList.remove('opacity-30', 'pointer-events-none');
+                step.draggable = true;
+            });
+
+            workflowSteps = [null, null, null, null, null];
+            const slots = document.querySelectorAll('.workflow-slot');
+            slots.forEach((slot, index) => {
+                slot.innerHTML = `<span class="text-slate-600 text-sm">Step ${index + 1}: Drop here</span>`;
+            });
+            document.getElementById('feedback-panel').classList.add('hidden');
+            updateWorkflowButtons();
+        }
+
+        function validateWorkflow() {
+            if (!selectedUseCase) return;
+
+            const useCase = useCaseWorkflows[selectedUseCase];
+            const correctWorkflow = useCase.correctWorkflow;
+
+            learningAttempts++;
+            document.getElementById('attempts-count').innerText = learningAttempts;
+
+            let correctCount = 0;
+            let feedbackHtml = '<div class="space-y-2">';
+
+            workflowSteps.forEach((step, index) => {
+                const isCorrectStep = step.id === correctWorkflow[index];
+                const isCorrectType = step.correct;
+
+                if (isCorrectStep) {
+                    correctCount++;
+                    feedbackHtml += `
+                        <div class="flex items-center p-2 bg-emerald-950/40 border border-emerald-800/60 rounded">
+                            <span class="text-emerald-400 text-xl mr-3">✓</span>
+                            <span class="text-emerald-400 text-xs font-bold">Step ${index + 1}: Correct!</span>
+                        </div>
+                    `;
+                } else if (isCorrectType) {
+                    feedbackHtml += `
+                        <div class="flex items-center p-2 bg-amber-950/40 border border-amber-800/60 rounded">
+                            <span class="text-amber-400 text-xl mr-3">⚠</span>
+                            <span class="text-amber-400 text-xs font-bold">Step ${index + 1}: Valid step, but wrong position</span>
+                        </div>
+                    `;
+                } else {
+                    feedbackHtml += `
+                        <div class="flex items-center p-2 bg-rose-950/40 border border-rose-800/60 rounded">
+                            <span class="text-rose-400 text-xl mr-3">✗</span>
+                            <span class="text-rose-400 text-xs font-bold">Step ${index + 1}: This step doesn't belong in automated workflow</span>
+                        </div>
+                    `;
+                }
+            });
+
+            feedbackHtml += '</div>';
+
+            // Show feedback
+            const feedbackPanel = document.getElementById('feedback-panel');
+            feedbackPanel.innerHTML = feedbackHtml;
+            feedbackPanel.classList.remove('hidden');
+
+            // Update score
+            const score = Math.round((correctCount / 5) * 100);
+            document.getElementById('score').innerText = `${score}%`;
+
+            // Enable run button if perfect
+            if (correctCount === 5) {
+                document.getElementById('btn-run-workflow').disabled = false;
+                feedbackPanel.innerHTML = `
+                    <div class="bg-emerald-950/40 border border-emerald-800 rounded-lg p-4">
+                        <div class="text-emerald-400 font-bold text-lg mb-2">🎉 Perfect Workflow!</div>
+                        <p class="text-emerald-300 text-xs mb-3">You've created the ideal automated security response pipeline. Click "Run My Workflow" to see it in action!</p>
+                        <div class="text-[10px] text-slate-400 bg-slate-900/60 p-2 rounded">
+                            <strong>Key Learning:</strong> Automation removes manual delays (emails, approvals, tickets) and human error, enabling sub-minute response to critical vulnerabilities.
+                        </div>
+                    </div>
+                `;
+            } else {
+                const hint = getHint(correctCount);
+                feedbackPanel.innerHTML += `
+                    <div class="mt-3 bg-cyan-950/30 border border-cyan-800/40 rounded-lg p-3">
+                        <div class="text-cyan-400 font-bold text-xs mb-1">💡 Hint:</div>
+                        <p class="text-cyan-300 text-xs">${hint}</p>
+                    </div>
+                `;
+            }
+        }
+
+        function getHint(correctCount) {
+            if (correctCount === 0) {
+                return "Start with detection! Every automated workflow begins by identifying the problem.";
+            } else if (correctCount === 1) {
+                return "After detecting the CVE, you need to find a solution. Where would you look for a patched version?";
+            } else if (correctCount === 2) {
+                return "Before using any patch, you should verify it's legitimate. Security first!";
+            } else if (correctCount === 3) {
+                return "Now that you have a verified patch, what's the next step before deployment?";
+            } else {
+                return "You're almost there! Think about zero-downtime deployment strategies.";
+            }
+        }
+
+        function runLearningWorkflow() {
+            if (!selectedUseCase) return;
+
+            // Save the use case ID before exiting (exitLearningMode clears it)
+            const useCaseId = selectedUseCase;
+
+            // Set flag to indicate Learning Mode execution
+            isLearningModeExecution = true;
+
+            // Switch back to demo mode
+            exitLearningMode();
+
+            // Auto-collapse facilitator panel for maximum screen space
+            if (facilitatorPanelVisible) {
+                toggleFacilitatorPanel();
+            }
+
+            // Wait a moment for transition, then trigger the actual workflow
+            setTimeout(() => {
+                // Start simulation if not already running
+                if (!simActive) {
+                    toggleClock();
+                }
+
+                // Execute the selected use case directly (bypass dialog)
+                setTimeout(() => {
+                    executeUseCase(useCaseId);
+                }, 1000);
+
+                // Show success message
+                appendLog("LEARNING", `Student-built workflow executing perfectly! Watch Use Case #${useCaseId} automation in action.`);
+            }, 500);
+        }
+
     </script>
 </body>
 </html>
