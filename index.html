@@ -90,33 +90,22 @@
                 </div>
             </div>
 
-            <!-- Manual System Status Overrides -->
-            <div class="bg-slate-950/80 p-3 rounded-lg border border-slate-800 space-y-3">
-                <label class="text-xs text-slate-400 block font-bold">Package Deployment Status</label>
+            <!-- Interactive Workflow Action Buttons (Hidden until triggered by automation) -->
+            <div class="bg-slate-950/80 p-3 rounded-lg border border-slate-800 space-y-2 hidden" id="action-buttons-container">
+                <!-- Interactive Pipeline Trigger Button -->
+                <button id="btn-cicd" onclick="executeDeployAgent()" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-2 rounded text-xs tracking-wider transition pulse-btn hidden">
+                    🚀 Start CI/CD pipeline
+                </button>
 
-                <!-- Package Manager Controls -->
-                <div>
-                    <label class="text-[10px] text-slate-500 block">PACKAGE MANAGER MANIFEST STATE</label>
-                    <select id="ctrl-package-version" onchange="updateInfrastructure()" class="w-full bg-slate-900 border border-slate-700 text-xs p-1.5 rounded text-orange-400 focus:outline-none">
-                        <option value="VULNERABLE">Using vulnerable library (lib-crypto-core v2.4.1-rc1)</option>
-                        <option value="PATCHED">Manifest bumped to Lightwell repository (v2.4.1-lw)</option>
-                    </select>
+                <!-- Remediation Check Button (appears after SBOM shows vulnerable) -->
+                <button id="btn-remediation" onclick="initiateRemediation()" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-2 rounded text-xs tracking-wider transition pulse-btn hidden">
+                    🔍 Check Lightwell for remediation options
+                </button>
 
-                    <!-- Interactive Pipeline Trigger Button -->
-                    <button id="btn-cicd" onclick="executeDeployAgent()" class="w-full mt-3 bg-blue-600 hover:bg-blue-500 text-white font-bold py-2 px-2 rounded text-xs tracking-wider transition pulse-btn hidden">
-                        🚀 Start CI/CD pipeline
-                    </button>
-
-                    <!-- Remediation Check Button (appears after SBOM shows vulnerable) -->
-                    <button id="btn-remediation" onclick="initiateRemediation()" class="w-full mt-3 bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-2 rounded text-xs tracking-wider transition pulse-btn hidden">
-                        🔍 Check Lightwell for remediation options
-                    </button>
-
-                    <!-- Ansible Patch Button (appears after system audit) -->
-                    <button id="btn-ansible" onclick="executeAnsiblePatch()" class="w-full mt-3 bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-2 rounded text-xs tracking-wider transition pulse-btn hidden">
-                        🤖 Use Ansible to Patch Servers
-                    </button>
-                </div>
+                <!-- Ansible Patch Button (appears after system audit) -->
+                <button id="btn-ansible" onclick="executeAnsiblePatch()" class="w-full bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-2 rounded text-xs tracking-wider transition pulse-btn hidden">
+                    🤖 Use Ansible to Patch Servers
+                </button>
             </div>
 
             <!-- Manual Use Case Triggers -->
@@ -161,19 +150,23 @@
             </div>
 
             <!-- Incident Status Badge -->
-            <div class="bg-slate-950/80 p-4 rounded-lg border border-slate-800">
-                <label class="text-xs text-slate-400 block mb-3 font-bold uppercase tracking-wider">Incident Status</label>
-                <div class="text-center">
-                    <div id="status-icon" class="text-4xl mb-2">⚪</div>
-                    <div id="status-text" class="text-lg font-black text-slate-500 tracking-wider mb-1">IDLE</div>
-                    <div id="status-desc" class="text-[10px] text-slate-600">No active incidents</div>
-                </div>
+            <div class="bg-slate-950/80 p-3 rounded-lg border border-slate-800">
+                <label class="text-[10px] text-slate-400 block mb-2 font-bold uppercase tracking-wider">Incident Status</label>
 
-                <!-- Time to Remediation Counter -->
-                <div class="mt-4 pt-4 border-t border-slate-800">
-                    <div class="text-[10px] text-slate-500 uppercase tracking-wider mb-1">Time to Remediation</div>
-                    <div id="remediation-timer" class="text-2xl font-black text-slate-600 font-mono tracking-wider">--:--</div>
-                    <div id="remediation-status" class="text-[9px] text-slate-700 mt-1">Not started</div>
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Status -->
+                    <div class="text-center border-r border-slate-800 pr-3">
+                        <div id="status-icon" class="text-2xl mb-1">⚪</div>
+                        <div id="status-text" class="text-xs font-black text-slate-500 tracking-wider">IDLE</div>
+                        <div id="status-desc" class="text-[8px] text-slate-600 mt-0.5">No incidents</div>
+                    </div>
+
+                    <!-- Time to Remediation -->
+                    <div class="text-center pl-3">
+                        <div class="text-[9px] text-slate-500 uppercase tracking-wider mb-1">Remediation</div>
+                        <div id="remediation-timer" class="text-lg font-black text-slate-600 font-mono tracking-wider">--:--</div>
+                        <div id="remediation-status" class="text-[8px] text-slate-700 mt-0.5">Not started</div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -1580,12 +1573,6 @@
             if (Math.random() > 0.6) generateRoutineLogs();
         }
 
-        function updateInfrastructure() {
-            infrastructure.packageState = document.getElementById('ctrl-package-version').value;
-
-            appendLog("CONFIG", `Package manifest state updated: ${infrastructure.packageState}`);
-            calculateSystemState();
-        }
 
         // ==========================================
         // AUTOMATED CHECK FLOW (INJECT #1 PART A)
@@ -1618,13 +1605,14 @@
 
             setTimeout(() => {
                 appendLog("MANIFEST_UPDATE", "Updating pom.xml with Lightwell repository and patched package");
-                document.getElementById('ctrl-package-version').value = 'PATCHED';
+                infrastructure.packageState = 'PATCHED';
                 updateMetricsManual(94, 10, 16);
             }, 5800);
 
             setTimeout(() => {
                 appendLog("BUILD_ENG", "pom.xml updated successfully. Ready for deployment.");
                 // Reveal the CI/CD pipeline start trigger
+                document.getElementById('action-buttons-container').classList.remove('hidden');
                 btnCicd.classList.remove('hidden');
                 updateMetricsManual(95, 8, 15);
 
@@ -1682,6 +1670,7 @@
 
                 // Show remediation button if vulnerable
                 if (!infrastructure.patchDeployed) {
+                    document.getElementById('action-buttons-container').classList.remove('hidden');
                     btnRemediation.classList.remove('hidden');
 
                     // Auto-click if running from Learning Mode for Use Case #2
@@ -1768,6 +1757,7 @@
 
             setTimeout(() => {
                 appendLog("ANSIBLE", "Audit complete. 7 servers require patching.");
+                document.getElementById('action-buttons-container').classList.remove('hidden');
                 btnAnsible.classList.remove('hidden');
                 serversAudited = true;
 
@@ -2455,8 +2445,8 @@
             simActive = false; timeElapsedSeconds = 0; activeInjects = [];
             infrastructure = { packageState: 'VULNERABLE', patchDeployed: false };
 
-            document.getElementById('ctrl-package-version').value = 'VULNERABLE';
-
+            // Hide action buttons container
+            document.getElementById('action-buttons-container').classList.add('hidden');
             btnCicd.classList.add('hidden');
             btnRemediation.classList.add('hidden');
             btnAnsible.classList.add('hidden');
