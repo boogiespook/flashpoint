@@ -3,8 +3,8 @@ FROM registry.access.redhat.com/ubi9/php-83:latest
 
 # Metadata
 LABEL maintainer="FLASHPOINT Security Response Platform" \
-      version="2.0.0" \
-      description="FLASHPOINT - Automated Security Response in Action. Interactive demonstration platform showcasing automated security incident response workflows across 6 real-world use cases: Supply Chain, Compliance, Infrastructure, Secret Sprawl, Certificate Expiration, and Cloud Misconfiguration remediation."
+      version="2.2.0" \
+      description="FLASHPOINT - Automated Security Response in Action. Interactive demonstration and training platform featuring: (1) Demo Mode - 6 fully automated security incident response workflows, (2) Learning Mode - Interactive drag-and-drop workflow builder for hands-on training. Use cases: Supply Chain CVE Remediation, Compliance Response, Infrastructure Patching, Secret Sprawl Detection, Certificate Renewal, and Cloud Misconfiguration Remediation."
 
 # Set working directory
 WORKDIR /opt/app-root/src

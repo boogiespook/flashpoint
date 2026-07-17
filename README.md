@@ -2,29 +2,162 @@
 
 **Automated Security Response in Action**
 
-A highly customized, fully automated incident simulation tool demonstrating modern security automation workflows across 6 real-world use cases.
+A highly customized, fully automated incident simulation and training platform demonstrating modern security automation workflows across 6 real-world use cases. Features both **Demo Mode** for presentations and **Learning Mode** for hands-on interactive training.
 
-## Overview
+## 🎯 Two Modes of Operation
 
-FLASHPOINT demonstrates six automated security response use cases:
+### 📺 Demo Mode
+Professional demonstration of fully automated security incident response workflows. Perfect for presentations, executive briefings, and showcasing automation capabilities.
 
-### Original Use Cases
-- **Use Case #1**: Supply Chain Threat - Automated CVE detection and patching via Lightwell
-- **Use Case #2**: Compliance & Media Pressure - SBOM generation and regulatory response
-- **Use Case #3**: Infrastructure Audit - Ansible Automation Platform server patching
+### 🎓 Learning Mode ⭐ NEW!
+Interactive drag-and-drop workflow builder where students practice creating security automation workflows. Features:
+- **6 Complete Learning Challenges** - One for each use case
+- **Smart Validation** - Real-time feedback on workflow correctness
+- **Context-Aware Hints** - Guided learning with progressive hints
+- **Randomized Steps** - Different challenge each session
+- **Decoy Steps** - Test understanding of automation vs manual processes
+- **Auto-Execution** - Watch your workflow run end-to-end when perfect
+- **Scoring & Statistics** - Track attempts, accuracy, and learning progress
 
-### New Security & Compliance Use Cases
-- **Use Case #4**: Secret Sprawl Detection - Automated HashiCorp Vault secret rotation and remediation
-- **Use Case #5**: Certificate Expiration Crisis - Automated Let's Encrypt ACME certificate renewal
-- **Use Case #6**: Cloud Misconfiguration Remediation - Automated AWS CSPM detection and S3 bucket security fixes
+## 📚 Use Cases
 
-## Features
+FLASHPOINT demonstrates six automated security response scenarios:
 
-- Real-time metrics dashboard (System Stability, Regulatory Risk, Reputational Risk)
-- Visual pipeline timelines showing automation progress
-- Live SIEM logs with color-coded severity
-- Comparison mode showing automated vs manual response times
-- Remote control via API for "magic" demonstrations
+### Use Case #1: Supply Chain Threat
+**Automated CVE detection and patching via Lightwell**
+- Detection → API Check → Verification → Build/Test → Blue/Green Deploy
+- Demonstrates: Zero-downtime patching, CI/CD automation
+- Learning Focus: Eliminating manual delays in vulnerability response
+
+### Use Case #2: Compliance & Media Pressure
+**SBOM generation and regulatory response**
+- Compliance Trigger → SBOM Gen → Crypto Sign → Audit Upload → Notify
+- Demonstrates: Cryptographically-signed evidence generation
+- Learning Focus: Automated regulatory compliance workflows
+
+### Use Case #3: Infrastructure Audit
+**Ansible Automation Platform server patching**
+- Discovery → Playbook → Vuln Scan → Patch Deploy → Verify
+- Demonstrates: Parallel multi-server remediation
+- Learning Focus: Infrastructure-as-Code for security
+
+### Use Case #4: Secret Sprawl Detection
+**Automated HashiCorp Vault secret rotation and remediation**
+- Detection → Vault Gen → Code Injection → Rotation → Verify
+- Demonstrates: Automated credential lifecycle management
+- Learning Focus: Eliminating hardcoded secrets
+
+### Use Case #5: Certificate Expiration Crisis
+**Automated Let's Encrypt ACME certificate renewal**
+- Discovery → ACME Challenge → Request → Deploy → Reload
+- Demonstrates: Zero-downtime certificate renewal
+- Learning Focus: Preventing certificate-related outages
+
+### Use Case #6: Cloud Misconfiguration Remediation
+**Automated AWS CSPM detection and S3 bucket security fixes**
+- CSPM Scan → S3 Detection → Policy Analysis → Remediation → Verify
+- Demonstrates: Cloud security posture automation
+- Learning Focus: Preventing data exposure incidents
+
+## ✨ Key Features
+
+### Demo Mode Features
+- **Real-time Metrics Dashboard** - System Stability, Regulatory Risk, Compliance Risk
+- **Visual Pipeline Timelines** - Color-coded automation progress for all 6 use cases
+- **Live SIEM Logs** - Real-time security event monitoring with color-coded severity
+- **Comparison Mode** - Dynamic side-by-side automated vs manual response times
+- **Incident Status Tracking** - Visual status indicators (Idle → Detecting → Responding → Resolved)
+- **Remote Control API** - "Magic" demonstrations via curl commands
+- **Collapsible Facilitator Panel** - Maximize screen space during presentations
+
+### Learning Mode Features ⭐ NEW!
+- **Interactive Workflow Builder** - Drag-and-drop interface for building automation workflows
+- **6 Complete Challenges** - Dedicated learning scenario for each use case
+- **Smart Validation Engine** - Instant feedback on workflow correctness
+- **Progressive Hints** - Context-aware guidance based on current progress
+- **Randomized Step Order** - Fresh challenge every session
+- **Decoy Step Detection** - Teaches difference between automated and manual approaches
+- **Auto-Execution** - Watch your student-built workflow run in real-time
+- **Scoring System** - Track attempts, accuracy, and progress
+- **Educational Feedback** - Learn WHY steps are correct or incorrect
+
+---
+
+## 🎓 Using Learning Mode
+
+Learning Mode provides an interactive training environment where students build security automation workflows hands-on.
+
+### Quick Start
+
+1. **Access FLASHPOINT** - Open `http://localhost/war-game/` (or your deployment URL)
+2. **Switch Mode** - Click "🎓 Switch to Learning Mode" button
+3. **Select Challenge** - Choose from 6 use case cards
+4. **Build Workflow** - Drag 5 steps from the library into the workflow builder
+5. **Validate** - Click "✓ Validate Workflow" to check correctness
+6. **Iterate** - Use hints to fix incorrect steps
+7. **Execute** - When perfect, click "▶ Run My Workflow" to see it in action!
+
+### Learning Workflow
+
+```
+Select Use Case → Build Workflow → Validate → Get Feedback → Fix Issues → Validate Again → Execute
+```
+
+### Example: Use Case #1 (Supply Chain Threat)
+
+**Challenge:** Build an automated workflow to detect and remediate CVE-2026-1234
+
+**Available Steps (9 total):**
+- ✅ CVE Detection (Correct)
+- ✅ Lightwell API Check (Correct)
+- ✅ Patch Verification (Correct)
+- ✅ Build & Test (Correct)
+- ✅ Blue/Green Deploy (Correct)
+- ❌ Email Security Team (Decoy - manual delay)
+- ❌ Manual Code Review (Decoy - human bottleneck)
+- ❌ Restart All Servers (Decoy - causes downtime)
+- ❌ Create Change Ticket (Decoy - approval workflow)
+
+**Correct Order:**
+1. CVE Detection
+2. Lightwell API Check
+3. Patch Verification
+4. Build & Test
+5. Blue/Green Deploy
+
+**Learning Outcome:** Students learn that automation eliminates manual delays (emails, approvals, tickets) and human error, enabling sub-minute response to critical vulnerabilities.
+
+### Validation Feedback Types
+
+- ✅ **Green Checkmark** - Correct step in correct position
+- ⚠️ **Amber Warning** - Valid automated step but wrong position
+- ❌ **Red X** - Decoy step that doesn't belong in automated workflow
+
+### Progressive Hints
+
+The system provides context-aware hints based on progress:
+- 0 correct: "Start with detection! Every automated workflow begins by identifying the problem."
+- 1 correct: "After detecting the CVE, you need to find a solution. Where would you look for a patched version?"
+- 2 correct: "Before using any patch, you should verify it's legitimate. Security first!"
+- 3 correct: "Now that you have a verified patch, what's the next step before deployment?"
+- 4 correct: "You're almost there! Think about zero-downtime deployment strategies."
+
+### Best Practices for Workshops
+
+**Recommended Flow:**
+1. **Demo Mode First** (10 mins) - Show automation in action
+2. **Explain Learning Mode** (5 mins) - Overview of the challenge
+3. **Hands-On Practice** (20 mins) - Students build workflows
+4. **Group Discussion** (10 mins) - Why certain steps are automated vs manual
+5. **Advanced Challenges** (Optional) - Try other use cases
+
+**Facilitator Tips:**
+- Let students try wrong answers - learning happens through mistakes
+- Use the comparison mode to show time savings
+- Emphasize the "why" behind automation choices
+- Challenge students to identify manual bottlenecks in their own environments
+
+---
 
 ## Remote Control API
 
@@ -499,7 +632,31 @@ podman run -d --privileged -p 8080:8080 flashpoint:2.0.0
 ---
 
 ## Version
-FLASHPOINT v2.0.0
+FLASHPOINT v2.2.0
+
+### Release Notes
+
+**v2.2.0** - Learning Mode Release
+- ✨ NEW: Complete Learning Mode with 6 interactive challenges
+- ✨ NEW: Drag-and-drop workflow builder
+- ✨ NEW: Smart validation engine with progressive hints
+- ✨ NEW: Use case selector interface
+- ✨ NEW: Auto-execution of student-built workflows
+- ✨ NEW: Scoring and statistics tracking
+- 🎨 Enhanced: Dynamic comparison mode for all use cases
+- 🔧 Enhanced: Complete automation workflows for use cases #4, #5, #6
+- 🔧 Fixed: Comparison mode now shows correct data per use case
+- 📚 Updated: Comprehensive documentation and workshop guides
+
+**v2.1.0** - Comparison Mode Release
+- Added dynamic comparison mode
+- Enhanced metrics tracking
+- Collapsible facilitator panel
+
+**v2.0.0** - Initial Release
+- 6 complete security automation use cases
+- Demo mode with timelines and metrics
+- Remote control API
 
 ---
 
