@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>War Game Remote Control</title>
+    <title>FLASHPOINT Remote Control</title>
     <style>
         body {
             font-family: monospace;
@@ -34,6 +34,8 @@
             cursor: pointer;
             font-family: monospace;
             font-size: 14px;
+            width: calc(50% - 14px);
+            text-align: left;
         }
         button:hover {
             background: #2563eb;
@@ -50,6 +52,9 @@
         button.success:hover {
             background: #059669;
         }
+        button.sim-ctrl {
+            width: auto;
+        }
         .label {
             color: #cbd5e1;
             font-size: 12px;
@@ -64,73 +69,82 @@
             margin-top: 10px;
             color: #22d3ee;
         }
+        .uc-grid {
+            display: flex;
+            flex-wrap: wrap;
+        }
     </style>
 </head>
 <body>
-    <h1>🕹️ War Game Remote Control</h1>
-    <p style="color: #64748b; font-size: 12px;">Control the simulation remotely via localStorage commands</p>
+    <h1>FLASHPOINT Remote Control</h1>
+    <p style="color: #64748b; font-size: 12px;">Control the simulation remotely via the API</p>
 
     <div class="section">
         <span class="label">Simulation Controls</span>
-        <button onclick="sendCommand('start')">▶ Start Simulation</button>
-        <button onclick="sendCommand('pause')">⏸ Pause Simulation</button>
-        <button class="danger" onclick="sendCommand('reset')">🔄 Reset All</button>
+        <button class="sim-ctrl" onclick="sendCommand('start')">&#9654; Start</button>
+        <button class="sim-ctrl" onclick="sendCommand('pause')">&#9208; Pause</button>
+        <button class="sim-ctrl danger" onclick="sendCommand('reset')">&#128260; Reset</button>
+        <button class="sim-ctrl" onclick="sendCommand('comparison')">&#128202; Comparison</button>
     </div>
 
     <div class="section">
         <span class="label">Trigger Use Cases</span>
-        <button onclick="sendCommand('trigger:1')">📦 Use Case #1: Supply Chain</button>
-        <button onclick="sendCommand('trigger:2')">⚖️ Use Case #2: Compliance</button>
-        <button onclick="sendCommand('trigger:3')">🔧 Use Case #3: Infrastructure</button>
+        <div class="uc-grid">
+            <button onclick="sendCommand('trigger:1')">&#128230; #1: Supply Chain</button>
+            <button onclick="sendCommand('trigger:2')">&#9878;&#65039; #2: Compliance</button>
+            <button onclick="sendCommand('trigger:3')">&#128295; #3: Infrastructure</button>
+            <button onclick="sendCommand('trigger:4')">&#128272; #4: Secret Sprawl</button>
+            <button onclick="sendCommand('trigger:5')">&#128220; #5: Certificate</button>
+            <button onclick="sendCommand('trigger:6')">&#9729;&#65039; #6: Cloud Misconfig</button>
+            <button onclick="sendCommand('trigger:7')">&#128051; #7: Container Vuln</button>
+            <button onclick="sendCommand('trigger:8')">&#128737;&#65039; #8: Ransomware</button>
+            <button onclick="sendCommand('trigger:9')">&#128225; #9: Data Exfil</button>
+        </div>
     </div>
 
     <div class="section">
         <span class="label">Action Buttons</span>
-        <button class="success" onclick="sendCommand('cicd')">🚀 Start CI/CD Pipeline</button>
-        <button class="success" onclick="sendCommand('remediation')">🔍 Check Lightwell</button>
-        <button class="success" onclick="sendCommand('ansible')">🤖 Ansible Patch</button>
-    </div>
-
-    <div class="section">
-        <span class="label">Display Controls</span>
-        <button onclick="sendCommand('comparison')">📊 Toggle Comparison Mode</button>
+        <button class="success sim-ctrl" onclick="sendCommand('cicd')">&#128640; CI/CD Pipeline</button>
+        <button class="success sim-ctrl" onclick="sendCommand('remediation')">&#128269; Lightwell</button>
+        <button class="success sim-ctrl" onclick="sendCommand('ansible')">&#129302; Ansible Patch</button>
     </div>
 
     <div class="section">
         <span class="label">Quick Scenarios</span>
-        <button onclick="runScenario1()">⚡ Quick Demo: Use Case #1</button>
-        <button onclick="runScenario3()">⚡ Quick Demo: Use Case #3</button>
+        <div class="uc-grid">
+            <button onclick="runScenario(1, 'cicd', 9000)">&#9889; Demo: UC #1</button>
+            <button onclick="runScenario(3, 'ansible', 13000)">&#9889; Demo: UC #3</button>
+        </div>
     </div>
 
-    <div class="status" id="status">Ready. Commands will be sent to the main War Game window.</div>
+    <div class="status" id="status">Ready.</div>
 
     <script>
+        const API = 'api.php';
+
         function sendCommand(cmd) {
-            localStorage.setItem('war-game-command', cmd);
-            updateStatus(`Sent command: ${cmd}`);
+            fetch(API, {
+                method: 'POST',
+                body: 'command=' + encodeURIComponent(cmd),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            })
+            .then(r => r.json())
+            .then(data => updateStatus(`Sent: ${cmd}`))
+            .catch(err => updateStatus(`Error: ${err.message}`));
         }
 
         function updateStatus(msg) {
             document.getElementById('status').innerText = msg;
             setTimeout(() => {
-                document.getElementById('status').innerText = 'Ready. Commands will be sent to the main War Game window.';
+                document.getElementById('status').innerText = 'Ready.';
             }, 2000);
         }
 
-        // Quick scenario: Full Use Case #1 flow
-        function runScenario1() {
+        function runScenario(ucNumber, actionCmd, actionDelay) {
             sendCommand('start');
-            setTimeout(() => sendCommand('trigger:1'), 1000);
-            setTimeout(() => sendCommand('cicd'), 9000);
-            updateStatus('Running Use Case #1 full demo...');
-        }
-
-        // Quick scenario: Full Use Case #3 flow
-        function runScenario3() {
-            sendCommand('start');
-            setTimeout(() => sendCommand('trigger:3'), 1000);
-            setTimeout(() => sendCommand('ansible'), 13000);
-            updateStatus('Running Use Case #3 full demo...');
+            setTimeout(() => sendCommand('trigger:' + ucNumber), 1000);
+            setTimeout(() => sendCommand(actionCmd), actionDelay);
+            updateStatus(`Running Use Case #${ucNumber} full demo...`);
         }
     </script>
 </body>

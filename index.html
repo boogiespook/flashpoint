@@ -1091,9 +1091,18 @@
                     <p class="text-sm text-slate-400">Choose a use case to practice building automated security workflows</p>
                 </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="flex justify-center gap-2 mb-6 flex-wrap" id="filter-bar">
+                    <button onclick="filterUseCases('all')" class="filter-tag active px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-purple-600 text-white border border-purple-500" data-filter="all">All</button>
+                    <button onclick="filterUseCases('software')" class="filter-tag px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-400 border border-slate-700 hover:border-purple-500 hover:text-purple-400" data-filter="software">Software</button>
+                    <button onclick="filterUseCases('compliance')" class="filter-tag px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-400 border border-slate-700 hover:border-purple-500 hover:text-purple-400" data-filter="compliance">Compliance</button>
+                    <button onclick="filterUseCases('infra')" class="filter-tag px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-400 border border-slate-700 hover:border-purple-500 hover:text-purple-400" data-filter="infra">Infra</button>
+                    <button onclick="filterUseCases('cloud')" class="filter-tag px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-400 border border-slate-700 hover:border-purple-500 hover:text-purple-400" data-filter="cloud">Cloud</button>
+                    <button onclick="filterUseCases('threat')" class="filter-tag px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-400 border border-slate-700 hover:border-purple-500 hover:text-purple-400" data-filter="threat">Threat</button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="use-case-grid">
                     <!-- Use Case #1 -->
-                    <button onclick="selectUseCase(1)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                    <button onclick="selectUseCase(1)" data-category="software" class="uc-card bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
                         <div class="text-4xl mb-3">📦</div>
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #1</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Supply Chain Threat</p>
@@ -1101,7 +1110,7 @@
                     </button>
 
                     <!-- Use Case #2 -->
-                    <button onclick="selectUseCase(2)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                    <button onclick="selectUseCase(2)" data-category="compliance" class="uc-card bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
                         <div class="text-4xl mb-3">⚖️</div>
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #2</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Compliance Response</p>
@@ -1109,7 +1118,7 @@
                     </button>
 
                     <!-- Use Case #3 -->
-                    <button onclick="selectUseCase(3)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                    <button onclick="selectUseCase(3)" data-category="infra" class="uc-card bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
                         <div class="text-4xl mb-3">🔧</div>
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #3</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Infrastructure Audit</p>
@@ -1117,7 +1126,7 @@
                     </button>
 
                     <!-- Use Case #4 -->
-                    <button onclick="selectUseCase(4)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                    <button onclick="selectUseCase(4)" data-category="software" class="uc-card bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
                         <div class="text-4xl mb-3">🔐</div>
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #4</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Secret Sprawl Detection</p>
@@ -1125,7 +1134,7 @@
                     </button>
 
                     <!-- Use Case #5 -->
-                    <button onclick="selectUseCase(5)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                    <button onclick="selectUseCase(5)" data-category="infra" class="uc-card bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
                         <div class="text-4xl mb-3">📜</div>
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #5</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Certificate Expiration</p>
@@ -1133,7 +1142,7 @@
                     </button>
 
                     <!-- Use Case #6 -->
-                    <button onclick="selectUseCase(6)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                    <button onclick="selectUseCase(6)" data-category="cloud" class="uc-card bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
                         <div class="text-4xl mb-3">☁️</div>
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #6</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Cloud Misconfiguration</p>
@@ -1141,7 +1150,7 @@
                     </button>
 
                     <!-- Use Case #7 -->
-                    <button onclick="selectUseCase(7)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                    <button onclick="selectUseCase(7)" data-category="cloud" class="uc-card bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
                         <div class="text-4xl mb-3">🐳</div>
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #7</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Container Image Vulnerability</p>
@@ -1149,7 +1158,7 @@
                     </button>
 
                     <!-- Use Case #8 -->
-                    <button onclick="selectUseCase(8)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                    <button onclick="selectUseCase(8)" data-category="threat" class="uc-card bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
                         <div class="text-4xl mb-3">🛡️</div>
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #8</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Ransomware Containment</p>
@@ -1157,7 +1166,7 @@
                     </button>
 
                     <!-- Use Case #9 -->
-                    <button onclick="selectUseCase(9)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                    <button onclick="selectUseCase(9)" data-category="threat" class="uc-card bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
                         <div class="text-4xl mb-3">📡</div>
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #9</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Data Exfiltration Detection</p>
@@ -3445,6 +3454,39 @@
             document.getElementById('workflow-learning-content').classList.add('hidden');
             document.getElementById('learning-subtitle').innerText = 'Select your use case';
             document.getElementById('btn-back-to-challenges').classList.add('hidden');
+        }
+
+        let activeFilters = new Set();
+
+        function filterUseCases(category) {
+            const allBtn = document.querySelector('.filter-tag[data-filter="all"]');
+            const activeCls = 'filter-tag active px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-purple-600 text-white border border-purple-500';
+            const inactiveCls = 'filter-tag px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 bg-slate-800 text-slate-400 border border-slate-700 hover:border-purple-500 hover:text-purple-400';
+
+            if (category === 'all') {
+                activeFilters.clear();
+            } else {
+                if (activeFilters.has(category)) {
+                    activeFilters.delete(category);
+                } else {
+                    activeFilters.add(category);
+                }
+            }
+
+            const showAll = activeFilters.size === 0;
+
+            document.querySelectorAll('#use-case-grid .uc-card').forEach(card => {
+                if (showAll || activeFilters.has(card.dataset.category)) {
+                    card.classList.remove('hidden');
+                } else {
+                    card.classList.add('hidden');
+                }
+            });
+
+            allBtn.className = showAll ? activeCls : inactiveCls;
+            document.querySelectorAll('.filter-tag:not([data-filter="all"])').forEach(tag => {
+                tag.className = activeFilters.has(tag.dataset.filter) ? activeCls : inactiveCls;
+            });
         }
 
         function selectUseCase(id) {
