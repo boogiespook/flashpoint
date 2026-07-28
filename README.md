@@ -2,7 +2,7 @@
 
 **Automated Security Response in Action**
 
-A highly customized, fully automated incident simulation and training platform demonstrating modern security automation workflows across 6 real-world use cases. Features both **Demo Mode** for presentations and **Learning Mode** for hands-on interactive training.
+A highly customized, fully automated incident simulation and training platform demonstrating modern security automation workflows across 9 real-world use cases. Features both **Demo Mode** for presentations and **Learning Mode** for hands-on interactive training.
 
 ## 🎯 Two Modes of Operation
 
@@ -11,7 +11,7 @@ Professional demonstration of fully automated security incident response workflo
 
 ### 🎓 Learning Mode ⭐ NEW!
 Interactive drag-and-drop workflow builder where students practice creating security automation workflows. Features:
-- **6 Complete Learning Challenges** - One for each use case
+- **9 Complete Learning Challenges** - One for each use case
 - **Smart Validation** - Real-time feedback on workflow correctness
 - **Context-Aware Hints** - Guided learning with progressive hints
 - **Randomized Steps** - Different challenge each session
@@ -21,7 +21,7 @@ Interactive drag-and-drop workflow builder where students practice creating secu
 
 ## 📚 Use Cases
 
-FLASHPOINT demonstrates six automated security response scenarios:
+FLASHPOINT demonstrates nine automated security response scenarios:
 
 ### Use Case #1: Supply Chain Threat
 **Automated CVE detection and patching via Lightwell**
@@ -59,11 +59,29 @@ FLASHPOINT demonstrates six automated security response scenarios:
 - Demonstrates: Cloud security posture automation
 - Learning Focus: Preventing data exposure incidents
 
+### Use Case #7: Container Image Vulnerability
+**Automated registry CVE scan and container image rebuild**
+- Registry Scan → Image Analysis → Base Image Patch → Container Rebuild → Rolling Redeploy
+- Demonstrates: Container lifecycle security across Kubernetes clusters
+- Learning Focus: Automated container patching with zero-downtime rollouts
+
+### Use Case #8: Ransomware Containment
+**Automated threat isolation and recovery**
+- Threat Detection → Network Isolation → Forensic Capture → Clean Restore → Integrity Verify
+- Demonstrates: Automated incident response and forensic preservation
+- Learning Focus: Speed of containment vs manual investigation delays
+
+### Use Case #9: Data Exfiltration Detection
+**DLP anomaly detection and egress blocking**
+- Anomaly Detection → Traffic Analysis → Egress Block → Endpoint Quarantine → Forensic Capture
+- Demonstrates: Automated data loss prevention and network forensics
+- Learning Focus: Stopping active exfiltration before data leaves the network
+
 ## ✨ Key Features
 
 ### Demo Mode Features
 - **Real-time Metrics Dashboard** - System Stability, Regulatory Risk, Compliance Risk
-- **Visual Pipeline Timelines** - Color-coded automation progress for all 6 use cases
+- **Visual Pipeline Timelines** - Color-coded automation progress for all 9 use cases
 - **Live SIEM Logs** - Real-time security event monitoring with color-coded severity
 - **Comparison Mode** - Dynamic side-by-side automated vs manual response times
 - **Incident Status Tracking** - Visual status indicators (Idle → Detecting → Responding → Resolved)
@@ -75,7 +93,7 @@ FLASHPOINT demonstrates six automated security response scenarios:
 
 ### Learning Mode Features ⭐ NEW!
 - **Interactive Workflow Builder** - Drag-and-drop interface for building automation workflows
-- **6 Complete Challenges** - Dedicated learning scenario for each use case
+- **9 Complete Challenges** - Dedicated learning scenario for each use case
 - **Smart Validation Engine** - Instant feedback on workflow correctness
 - **Progressive Hints** - Context-aware guidance based on current progress
 - **Randomized Step Order** - Fresh challenge every session
@@ -92,9 +110,9 @@ Learning Mode provides an interactive training environment where students build 
 
 ### Quick Start
 
-1. **Access FLASHPOINT** - Open `http://localhost/war-game/` (or your deployment URL)
+1. **Access FLASHPOINT** - Open `http://localhost/flash-point/` (or your deployment URL)
 2. **Switch Mode** - Click "🎓 Switch to Learning Mode" button
-3. **Select Challenge** - Choose from 6 use case cards
+3. **Select Challenge** - Choose from 9 use case cards
 4. **Build Workflow** - Drag 5 steps from the library into the workflow builder
 5. **Validate** - Click "✓ Validate Workflow" to check correctness
 6. **Iterate** - Use hints to fix incorrect steps
@@ -168,7 +186,7 @@ The simulation can be controlled remotely via curl commands, perfect for running
 
 ### Base URL
 ```
-http://localhost/war-game/api.php
+http://localhost/flash-point/api.php
 ```
 
 Replace `localhost` with your server hostname/IP as needed.
@@ -179,39 +197,57 @@ Replace `localhost` with your server hostname/IP as needed.
 
 ### Trigger Use Case #1: Supply Chain Threat
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:1"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:1"
 ```
 Triggers CVE-2026-1234 detection in lib-crypto-core package, initiating automated Lightwell remediation.
 
 ### Trigger Use Case #2: Compliance & Media Pressure
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:2"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:2"
 ```
 Triggers compliance auditor and media inquiry, generating cryptographically-signed SBOM.
 
 ### Trigger Use Case #3: Infrastructure Audit
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:3"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:3"
 ```
 Initiates Ansible audit of 25 RHEL servers for access controls and vulnerabilities.
 
 ### Trigger Use Case #4: Secret Sprawl Detection
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:4"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:4"
 ```
 Detects hardcoded secrets across codebase and triggers automated HashiCorp Vault rotation.
 
 ### Trigger Use Case #5: Certificate Expiration Crisis
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:5"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:5"
 ```
 Discovers expiring SSL certificates and automates Let's Encrypt ACME renewal workflow.
 
 ### Trigger Use Case #6: Cloud Misconfiguration Remediation
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:6"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:6"
 ```
 Detects publicly exposed S3 buckets via AWS CSPM and automatically remediates security issues.
+
+### Trigger Use Case #7: Container Image Vulnerability
+```bash
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:7"
+```
+Scans container registry for critical CVE in base image and triggers automated rebuild and rolling redeploy across Kubernetes clusters.
+
+### Trigger Use Case #8: Ransomware Containment
+```bash
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:8"
+```
+Detects active ransomware on production server, isolates the threat, captures forensics, and restores from clean backup.
+
+### Trigger Use Case #9: Data Exfiltration Detection
+```bash
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:9"
+```
+Detects anomalous outbound data transfer via DLP sensors, blocks egress, quarantines endpoint, and captures forensic evidence.
 
 ---
 
@@ -219,17 +255,17 @@ Detects publicly exposed S3 buckets via AWS CSPM and automatically remediates se
 
 ### Start Simulation
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=start"
+curl -X POST http://localhost/flash-point/api.php -d "command=start"
 ```
 
 ### Pause Simulation
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=pause"
+curl -X POST http://localhost/flash-point/api.php -d "command=pause"
 ```
 
 ### Reset All
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=reset"
+curl -X POST http://localhost/flash-point/api.php -d "command=reset"
 ```
 Resets the simulation to initial state, clearing all metrics and logs.
 
@@ -241,25 +277,25 @@ These commands click the interactive buttons that appear during workflows.
 
 ### Start CI/CD Pipeline
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=cicd"
+curl -X POST http://localhost/flash-point/api.php -d "command=cicd"
 ```
 Clicks the "🚀 Start CI/CD pipeline" button (when visible after Use Case #1 automated checks complete).
 
 ### Check Lightwell for Remediation
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=remediation"
+curl -X POST http://localhost/flash-point/api.php -d "command=remediation"
 ```
 Clicks the "🔍 Check Lightwell for remediation options" button (when visible after Use Case #2 SBOM shows vulnerable).
 
 ### Use Ansible to Patch Servers
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=ansible"
+curl -X POST http://localhost/flash-point/api.php -d "command=ansible"
 ```
 Clicks the "🤖 Use Ansible to Patch Servers" button (when visible after Use Case #3 finds vulnerable servers).
 
 ### Toggle Comparison Mode
 ```bash
-curl -X POST http://localhost/war-game/api.php -d "command=comparison"
+curl -X POST http://localhost/flash-point/api.php -d "command=comparison"
 ```
 Shows/hides the automated vs manual response time comparison panel.
 
@@ -269,13 +305,13 @@ Shows/hides the automated vs manual response time comparison panel.
 
 ### Check Pending Command
 ```bash
-curl http://localhost/war-game/api.php
+curl http://localhost/flash-point/api.php
 ```
 Returns any pending command in the queue.
 
 ### Clear Command Queue
 ```bash
-curl -X DELETE http://localhost/war-game/api.php
+curl -X DELETE http://localhost/flash-point/api.php
 ```
 Clears any pending commands.
 
@@ -290,14 +326,14 @@ Demonstrates end-to-end automated application patching workflow.
 #!/bin/bash
 # Start and run Use Case #1 with CI/CD deployment
 
-curl -X POST http://localhost/war-game/api.php -d "command=start"
+curl -X POST http://localhost/flash-point/api.php -d "command=start"
 sleep 1
 
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:1"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:1"
 echo "Triggered Use Case #1 - waiting for automated checks..."
 sleep 8
 
-curl -X POST http://localhost/war-game/api.php -d "command=cicd"
+curl -X POST http://localhost/flash-point/api.php -d "command=cicd"
 echo "Started CI/CD pipeline - deployment in progress..."
 ```
 
@@ -308,14 +344,14 @@ Demonstrates infrastructure audit and Ansible automated patching.
 #!/bin/bash
 # Start and run Use Case #3 with Ansible patching
 
-curl -X POST http://localhost/war-game/api.php -d "command=start"
+curl -X POST http://localhost/flash-point/api.php -d "command=start"
 sleep 1
 
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:3"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:3"
 echo "Triggered Use Case #3 - Ansible audit running..."
 sleep 12
 
-curl -X POST http://localhost/war-game/api.php -d "command=ansible"
+curl -X POST http://localhost/flash-point/api.php -d "command=ansible"
 echo "Ansible patching 7 servers - please wait..."
 ```
 
@@ -327,33 +363,33 @@ Shows all three use cases in sequence.
 # Comprehensive demo of all use cases
 
 echo "Starting Crisis Simulator Demo..."
-curl -X POST http://localhost/war-game/api.php -d "command=start"
+curl -X POST http://localhost/flash-point/api.php -d "command=start"
 sleep 2
 
 echo ""
 echo "=== USE CASE #1: Supply Chain Threat ==="
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:1"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:1"
 sleep 8
-curl -X POST http://localhost/war-game/api.php -d "command=cicd"
+curl -X POST http://localhost/flash-point/api.php -d "command=cicd"
 sleep 15
 
 echo ""
 echo "Resetting for next use case..."
-curl -X POST http://localhost/war-game/api.php -d "command=reset"
+curl -X POST http://localhost/flash-point/api.php -d "command=reset"
 sleep 3
-curl -X POST http://localhost/war-game/api.php -d "command=start"
+curl -X POST http://localhost/flash-point/api.php -d "command=start"
 sleep 2
 
 echo ""
 echo "=== USE CASE #3: Infrastructure Audit ==="
-curl -X POST http://localhost/war-game/api.php -d "command=trigger:3"
+curl -X POST http://localhost/flash-point/api.php -d "command=trigger:3"
 sleep 12
-curl -X POST http://localhost/war-game/api.php -d "command=ansible"
+curl -X POST http://localhost/flash-point/api.php -d "command=ansible"
 sleep 15
 
 echo ""
 echo "Demo complete!"
-curl -X POST http://localhost/war-game/api.php -d "command=comparison"
+curl -X POST http://localhost/flash-point/api.php -d "command=comparison"
 echo "Comparison mode enabled - showing automated vs manual timings"
 ```
 
@@ -361,14 +397,14 @@ echo "Comparison mode enabled - showing automated vs manual timings"
 
 ## Browser-Based Remote Control
 
-For non-command-line control, open `http://localhost/war-game/trigger.html` in a separate browser tab/window for a GUI control panel.
+For non-command-line control, open `http://localhost/flash-point/trigger.html` in a separate browser tab/window for a GUI control panel.
 
 ---
 
 ## How It Works
 
 1. **Send Command**: curl POST sends command to `api.php`
-2. **Command Storage**: API writes command to `/tmp/war-game-command.txt` with timestamp
+2. **Command Storage**: API writes command to `/tmp/flash-point-command.txt` with timestamp
 3. **Polling**: Main simulation polls API every 500ms
 4. **Execution**: When command found, simulation executes it and clears the file
 5. **Auto-Expire**: Commands older than 10 seconds are automatically discarded
@@ -393,19 +429,22 @@ For even faster control, create shell aliases:
 
 ```bash
 # Add to ~/.bashrc or ~/.zshrc
-alias wg-reset='curl -X POST http://localhost/war-game/api.php -d "command=reset"'
-alias wg-start='curl -X POST http://localhost/war-game/api.php -d "command=start"'
-alias wg-uc1='curl -X POST http://localhost/war-game/api.php -d "command=trigger:1"'
-alias wg-uc2='curl -X POST http://localhost/war-game/api.php -d "command=trigger:2"'
-alias wg-uc3='curl -X POST http://localhost/war-game/api.php -d "command=trigger:3"'
-alias wg-uc4='curl -X POST http://localhost/war-game/api.php -d "command=trigger:4"'
-alias wg-uc5='curl -X POST http://localhost/war-game/api.php -d "command=trigger:5"'
-alias wg-uc6='curl -X POST http://localhost/war-game/api.php -d "command=trigger:6"'
-alias wg-cicd='curl -X POST http://localhost/war-game/api.php -d "command=cicd"'
-alias wg-ansible='curl -X POST http://localhost/war-game/api.php -d "command=ansible"'
+alias fp-reset='curl -X POST http://localhost/flash-point/api.php -d "command=reset"'
+alias fp-start='curl -X POST http://localhost/flash-point/api.php -d "command=start"'
+alias fp-uc1='curl -X POST http://localhost/flash-point/api.php -d "command=trigger:1"'
+alias fp-uc2='curl -X POST http://localhost/flash-point/api.php -d "command=trigger:2"'
+alias fp-uc3='curl -X POST http://localhost/flash-point/api.php -d "command=trigger:3"'
+alias fp-uc4='curl -X POST http://localhost/flash-point/api.php -d "command=trigger:4"'
+alias fp-uc5='curl -X POST http://localhost/flash-point/api.php -d "command=trigger:5"'
+alias fp-uc6='curl -X POST http://localhost/flash-point/api.php -d "command=trigger:6"'
+alias fp-uc7='curl -X POST http://localhost/flash-point/api.php -d "command=trigger:7"'
+alias fp-uc8='curl -X POST http://localhost/flash-point/api.php -d "command=trigger:8"'
+alias fp-uc9='curl -X POST http://localhost/flash-point/api.php -d "command=trigger:9"'
+alias fp-cicd='curl -X POST http://localhost/flash-point/api.php -d "command=cicd"'
+alias fp-ansible='curl -X POST http://localhost/flash-point/api.php -d "command=ansible"'
 ```
 
-Then simply type `wg-uc1` instead of the full curl command!
+Then simply type `fp-uc1` instead of the full curl command!
 
 ---
 
@@ -449,13 +488,13 @@ Build and run FLASHPOINT in a container using Podman:
 
 ```bash
 # Build the container image
-podman build -t flashpoint:2.0.0 .
+podman build -t flashpoint:2.5.0 .
 
 # Run the container
 podman run -d \
   --name flashpoint \
   -p 8080:8080 \
-  flashpoint:2.0.0
+  flashpoint:2.5.0
 
 # Access FLASHPOINT
 # Open browser to: http://localhost:8080
@@ -494,7 +533,7 @@ podman healthcheck run flashpoint
 podman run -d \
   --name flashpoint \
   -p 9090:8080 \
-  flashpoint:2.0.0
+  flashpoint:2.5.0
 
 # Access at: http://localhost:9090
 ```
@@ -505,10 +544,10 @@ Podman supports rootless containers by default. No sudo required!
 
 ```bash
 # Build as regular user
-podman build -t flashpoint:2.0.0 .
+podman build -t flashpoint:2.5.0 .
 
 # Run as regular user
-podman run -d --name flashpoint -p 8080:8080 flashpoint:2.0.0
+podman run -d --name flashpoint -p 8080:8080 flashpoint:2.5.0
 ```
 
 ### Production Deployment
@@ -522,7 +561,7 @@ podman run -d \
   --restart=always \
   --health-cmd='curl -f http://localhost:8080/ || exit 1' \
   --health-interval=30s \
-  flashpoint:2.0.0
+  flashpoint:2.5.0
 ```
 
 ### Remote Control API in Container
@@ -568,14 +607,14 @@ Push to your registry for easy deployment:
 
 ```bash
 # Tag for registry
-podman tag flashpoint:2.0.0 registry.example.com/flashpoint:2.0.0
+podman tag flashpoint:2.5.0 registry.example.com/flashpoint:2.5.0
 
 # Push to registry
-podman push registry.example.com/flashpoint:2.0.0
+podman push registry.example.com/flashpoint:2.5.0
 
 # Pull and run on another host
-podman pull registry.example.com/flashpoint:2.0.0
-podman run -d -p 8080:8080 registry.example.com/flashpoint:2.0.0
+podman pull registry.example.com/flashpoint:2.5.0
+podman run -d -p 8080:8080 registry.example.com/flashpoint:2.5.0
 ```
 
 ### SELinux Considerations (RHEL/Fedora)
@@ -588,7 +627,7 @@ podman run -d \
   --name flashpoint \
   --security-opt label=type:container_runtime_t \
   -p 8080:8080 \
-  flashpoint:2.0.0
+  flashpoint:2.5.0
 
 # Option 2: Temporarily permissive (testing only)
 sudo setenforce 0
@@ -623,21 +662,32 @@ podman inspect flashpoint
 sudo lsof -i :8080
 
 # Use different port
-podman run -d -p 9090:8080 flashpoint:2.0.0
+podman run -d -p 9090:8080 flashpoint:2.5.0
 ```
 
 **Permission denied on /tmp:**
 ```bash
 # Run with privileged mode (testing only)
-podman run -d --privileged -p 8080:8080 flashpoint:2.0.0
+podman run -d --privileged -p 8080:8080 flashpoint:2.5.0
 ```
 
 ---
 
 ## Version
-FLASHPOINT v2.4.0
+FLASHPOINT v2.5.0
 
 ### Release Notes
+
+**v2.5.0** - Expanded Use Cases & UX Improvements
+- ✨ NEW: Use Case #7 - Container Image Vulnerability (registry CVE scan, image rebuild, K8s rolling redeploy)
+- ✨ NEW: Use Case #8 - Ransomware Containment (threat isolation, forensic capture, clean restore)
+- ✨ NEW: Use Case #9 - Data Exfiltration Detection (DLP anomaly detection, egress blocking, endpoint quarantine)
+- 🎨 Enhanced: 3x3 use case selector grid in Learning Mode
+- 🎨 Enhanced: Gear icon repositioned to header next to Simulation Clock
+- 🎨 Enhanced: "Use Cases" navigation button in Learning Mode
+- 🔧 Fixed: Correct Steps counter now shows actual correct count during validation
+- 🔧 Fixed: Score resets to 0% when clearing workflow
+- 📚 Updated: README with all 9 use cases, API commands, and shell aliases
 
 **v2.4.0** - Polish & UX Enhancements
 - ✨ NEW: Sound effects system with Web Audio API (alert, success, click sounds)
@@ -673,7 +723,7 @@ FLASHPOINT v2.4.0
 - Collapsible facilitator panel
 
 **v2.0.0** - Initial Release
-- 6 complete security automation use cases
+- 9 complete security automation use cases
 - Demo mode with timelines and metrics
 - Remote control API
 

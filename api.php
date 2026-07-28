@@ -4,8 +4,8 @@ header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, DELETE');
 header('Access-Control-Allow-Headers: Content-Type');
 
-$commandFile = '/tmp/war-game-command.txt';
-$lockFile = '/tmp/war-game-command.lock';
+$commandFile = '/tmp/flash-point-command.txt';
+$lockFile = '/tmp/flash-point-command.lock';
 
 // Handle preflight requests
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {

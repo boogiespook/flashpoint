@@ -361,19 +361,19 @@
     <!-- Top Header -->
     <header class="border-b border-slate-800 pb-4 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-            <h1 class="text-xl font-bold tracking-wider text-cyan-400">FLASHPOINT // v2.4.0</h1>
+            <h1 class="text-xl font-bold tracking-wider text-cyan-400">FLASHPOINT // v2.5.0</h1>
             <div class="text-xs text-slate-400 mt-1">Automated Security Response in Action</div>
         </div>
-        <div class="text-right">
-            <div class="text-xs text-slate-500">SIMULATION CLOCK</div>
-            <div id="sim-clock" class="text-2xl font-black text-amber-400 tracking-widest">00:00:00</div>
+        <div class="flex items-center gap-4">
+            <button id="floating-toggle-btn" onclick="toggleFacilitatorPanel()" class="hidden bg-slate-800/90 hover:bg-pink-600 border-2 border-pink-500/50 hover:border-pink-400 text-pink-500 hover:text-white font-bold w-8 h-8 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center" title="Show facilitator controls">
+                <span class="text-xs">⚙</span>
+            </button>
+            <div class="text-right">
+                <div class="text-xs text-slate-500">SIMULATION CLOCK</div>
+                <div id="sim-clock" class="text-2xl font-black text-amber-400 tracking-widest">00:00:00</div>
+            </div>
         </div>
     </header>
-
-    <!-- Floating Toggle Button (Hidden by default) -->
-    <button id="floating-toggle-btn" onclick="toggleFacilitatorPanel()" class="hidden fixed top-6 left-64 z-50 bg-slate-800/90 hover:bg-pink-600 border-2 border-pink-500/50 hover:border-pink-400 text-pink-500 hover:text-white font-bold w-8 h-8 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center" title="Show facilitator controls">
-        <span class="text-xs">⚙</span>
-    </button>
 
     <!-- Main Workspace Split -->
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -451,6 +451,18 @@
                     <button id="inj-btn-6" onclick="triggerInject(6)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-teal-600 p-2 rounded text-xs transition">
                         <div id="inj-title-6" class="font-bold text-teal-400">Use Case #6: Cloud Misconfiguration</div>
                         <p id="inj-desc-6" class="text-[10px] text-slate-400 truncate">Public S3 bucket detected with sensitive data exposure.</p>
+                    </button>
+                    <button id="inj-btn-7" onclick="triggerInject(7)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-red-600 p-2 rounded text-xs transition">
+                        <div id="inj-title-7" class="font-bold text-red-400">Use Case #7: Container Image Vulnerability</div>
+                        <p id="inj-desc-7" class="text-[10px] text-slate-400 truncate">Critical CVE in base Docker image affecting 47 production containers.</p>
+                    </button>
+                    <button id="inj-btn-8" onclick="triggerInject(8)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-pink-600 p-2 rounded text-xs transition">
+                        <div id="inj-title-8" class="font-bold text-pink-400">Use Case #8: Ransomware Containment</div>
+                        <p id="inj-desc-8" class="text-[10px] text-slate-400 truncate">EDR detects active ransomware on production database server.</p>
+                    </button>
+                    <button id="inj-btn-9" onclick="triggerInject(9)" class="w-full text-left bg-slate-800 hover:bg-slate-700 border-l-4 border-indigo-600 p-2 rounded text-xs transition">
+                        <div id="inj-title-9" class="font-bold text-indigo-400">Use Case #9: Data Exfiltration Detection</div>
+                        <p id="inj-desc-9" class="text-[10px] text-slate-400 truncate">Anomalous outbound data transfer detected by DLP sensors.</p>
                     </button>
                 </div>
             </div>
@@ -743,6 +755,141 @@
                     </div>
                 </div>
 
+                <!-- Container Timeline (Hidden by default) -->
+                <div id="timeline-container" class="relative hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 text-center">
+                            <div id="container-stage-1" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">1</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Registry<br>Scan</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="container-connector-1" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="container-stage-2" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">2</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Image<br>Analysis</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="container-connector-2" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="container-stage-3" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">3</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Patch<br>Base</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="container-connector-3" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="container-stage-4" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">4</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Container<br>Rebuild</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="container-connector-4" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="container-stage-5" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">5</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Rolling<br>Redeploy</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="container-connector-5" class="h-full bg-red-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="container-stage-6" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">6</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Health<br>Verify</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ransomware Timeline (Hidden by default) -->
+                <div id="timeline-ransomware" class="relative hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 text-center">
+                            <div id="ransomware-stage-1" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">1</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Threat<br>Detect</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ransomware-connector-1" class="h-full bg-pink-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="ransomware-stage-2" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">2</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Network<br>Isolate</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ransomware-connector-2" class="h-full bg-pink-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="ransomware-stage-3" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">3</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Forensic<br>Capture</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ransomware-connector-3" class="h-full bg-pink-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="ransomware-stage-4" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">4</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Clean<br>Restore</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ransomware-connector-4" class="h-full bg-pink-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="ransomware-stage-5" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">5</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Integrity<br>Verify</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="ransomware-connector-5" class="h-full bg-pink-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="ransomware-stage-6" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">6</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Incident<br>Report</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Data Exfiltration Timeline (Hidden by default) -->
+                <div id="timeline-exfil" class="relative hidden">
+                    <div class="flex items-center justify-between">
+                        <div class="flex-1 text-center">
+                            <div id="exfil-stage-1" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">1</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Anomaly<br>Detect</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="exfil-connector-1" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="exfil-stage-2" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">2</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Traffic<br>Analysis</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="exfil-connector-2" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="exfil-stage-3" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">3</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Egress<br>Block</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="exfil-connector-3" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="exfil-stage-4" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">4</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Endpoint<br>Quarantine</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="exfil-connector-4" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="exfil-stage-5" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">5</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Forensic<br>Capture</div>
+                        </div>
+                        <div class="flex-1 h-0.5 bg-slate-800 relative -mx-2">
+                            <div id="exfil-connector-5" class="h-full bg-indigo-500 transition-all duration-500" style="width: 0%"></div>
+                        </div>
+                        <div class="flex-1 text-center">
+                            <div id="exfil-stage-6" class="w-10 h-10 mx-auto rounded-full bg-slate-800 border-2 border-slate-700 flex items-center justify-center text-slate-600 font-bold text-xs transition-all duration-500">6</div>
+                            <div class="text-[10px] text-slate-500 mt-2">Impact<br>Report</div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Ansible Timeline (Hidden by default) -->
                 <div id="timeline-ansible" class="relative hidden">
                     <!-- Timeline Container -->
@@ -925,17 +1072,22 @@
             <div class="flex justify-between items-center mb-6 border-b border-purple-800/50 pb-4">
                 <div>
                     <h1 class="text-2xl font-bold text-purple-400">🎓 LEARNING MODE</h1>
-                    <p class="text-sm text-slate-400 mt-1" id="learning-subtitle">Select your learning challenge</p>
+                    <p class="text-sm text-slate-400 mt-1" id="learning-subtitle">Select your use case</p>
                 </div>
-                <button onclick="exitLearningMode()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded text-sm font-bold transition">
-                    ← Back to Demo Mode
-                </button>
+                <div class="flex gap-2">
+                    <button id="btn-back-to-challenges" onclick="showUseCaseSelector()" class="hidden bg-purple-800/60 hover:bg-purple-700 text-purple-300 px-4 py-2 rounded text-sm font-bold transition">
+                        ← Use Cases
+                    </button>
+                    <button onclick="exitLearningMode()" class="bg-slate-800 hover:bg-slate-700 text-slate-300 px-4 py-2 rounded text-sm font-bold transition">
+                        ← Back to Demo Mode
+                    </button>
+                </div>
             </div>
 
             <!-- Use Case Selector (shown first) -->
             <div id="use-case-selector" class="hidden">
                 <div class="text-center mb-8">
-                    <h2 class="text-xl font-bold text-slate-200 mb-2">Select Your Learning Challenge</h2>
+                    <h2 class="text-xl font-bold text-slate-200 mb-2">Select Your Use Case</h2>
                     <p class="text-sm text-slate-400">Choose a use case to practice building automated security workflows</p>
                 </div>
 
@@ -986,6 +1138,30 @@
                         <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #6</h3>
                         <p class="text-sm text-slate-300 font-bold mb-2">Cloud Misconfiguration</p>
                         <p class="text-xs text-slate-400">AWS CSPM and S3 remediation</p>
+                    </button>
+
+                    <!-- Use Case #7 -->
+                    <button onclick="selectUseCase(7)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                        <div class="text-4xl mb-3">🐳</div>
+                        <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #7</h3>
+                        <p class="text-sm text-slate-300 font-bold mb-2">Container Image Vulnerability</p>
+                        <p class="text-xs text-slate-400">Registry CVE scan and image rebuild</p>
+                    </button>
+
+                    <!-- Use Case #8 -->
+                    <button onclick="selectUseCase(8)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                        <div class="text-4xl mb-3">🛡️</div>
+                        <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #8</h3>
+                        <p class="text-sm text-slate-300 font-bold mb-2">Ransomware Containment</p>
+                        <p class="text-xs text-slate-400">Automated threat isolation and recovery</p>
+                    </button>
+
+                    <!-- Use Case #9 -->
+                    <button onclick="selectUseCase(9)" class="bg-gradient-to-br from-slate-800 to-slate-900 hover:from-purple-900 hover:to-slate-900 border-2 border-slate-700 hover:border-purple-500 rounded-xl p-6 text-left transition-all duration-300 group">
+                        <div class="text-4xl mb-3">📡</div>
+                        <h3 class="text-lg font-bold text-cyan-400 group-hover:text-purple-400 mb-2">Use Case #9</h3>
+                        <p class="text-sm text-slate-300 font-bold mb-2">Data Exfiltration Detection</p>
+                        <p class="text-xs text-slate-400">DLP anomaly detection and egress blocking</p>
                     </button>
                 </div>
             </div>
@@ -1242,7 +1418,7 @@
             switch(action) {
                 case 'trigger':
                     const useCaseId = parseInt(parts[1]);
-                    if (useCaseId >= 1 && useCaseId <= 6) {
+                    if (useCaseId >= 1 && useCaseId <= 9) {
                         triggerInject(useCaseId);
                     }
                     break;
@@ -1400,6 +1576,60 @@
                     { id: 'create-ticket', correct: false, icon: '🎫', title: 'Create Jira Ticket', desc: 'Wait for ops team' },
                     { id: 'audit-manually', correct: false, icon: '📊', title: 'Manual Audit', desc: 'Spreadsheet tracking' },
                     { id: 'email-owners', correct: false, icon: '📧', title: 'Email Resource Owners', desc: 'Manual notification' }
+                ]
+            },
+            7: {
+                title: '🐳 Container Image Vulnerability',
+                subtitle: 'Registry CVE Scan & Image Rebuild',
+                description: 'A critical CVE has been discovered in the <code class="bg-slate-900/60 px-2 py-0.5 rounded text-red-400">node:18-alpine</code> base image used across your container registry. <span class="text-rose-400 font-bold">47 production images</span> are affected, running across 3 Kubernetes clusters with active customer traffic.',
+                mission: 'Build an automated container remediation workflow that scans the registry, identifies affected images, patches the base image, rebuilds containers, and performs a rolling redeploy with zero downtime.',
+                correctWorkflow: ['registry-scan', 'image-analysis', 'base-patch', 'container-rebuild', 'rolling-redeploy'],
+                steps: [
+                    { id: 'registry-scan', correct: true, icon: '🔍', title: 'Registry Scan', desc: 'Scan container registry for CVE' },
+                    { id: 'image-analysis', correct: true, icon: '🧬', title: 'Image Layer Analysis', desc: 'Identify affected image layers' },
+                    { id: 'base-patch', correct: true, icon: '🩹', title: 'Base Image Patch', desc: 'Update base image to patched version' },
+                    { id: 'container-rebuild', correct: true, icon: '🔨', title: 'Container Rebuild', desc: 'Rebuild all affected images' },
+                    { id: 'rolling-redeploy', correct: true, icon: '🚀', title: 'Rolling Redeploy', desc: 'Zero-downtime Kubernetes rollout' },
+                    { id: 'manual-dockerfile', correct: false, icon: '📝', title: 'Manual Dockerfile Edit', desc: 'Hand-edit each Dockerfile' },
+                    { id: 'email-devops', correct: false, icon: '📧', title: 'Email DevOps Team', desc: 'Manual notification process' },
+                    { id: 'stop-containers', correct: false, icon: '⛔', title: 'Stop All Containers', desc: 'Causes full service outage' },
+                    { id: 'change-request', correct: false, icon: '🎫', title: 'Create Change Request', desc: 'Manual approval workflow' }
+                ]
+            },
+            8: {
+                title: '🛡️ Ransomware Containment',
+                subtitle: 'Automated Threat Isolation & Recovery',
+                description: 'EDR has detected active ransomware (<code class="bg-slate-900/60 px-2 py-0.5 rounded text-pink-400">LockBit 4.0</code>) on production database server <span class="text-rose-400 font-bold">db-prod-01</span>. File encryption has begun and lateral movement indicators have been detected on 3 adjacent hosts in the same VLAN.',
+                mission: 'Create an automated incident response workflow that detects the threat, isolates compromised hosts, captures forensic evidence, restores from clean backups, and verifies system integrity.',
+                correctWorkflow: ['threat-detect', 'network-isolate', 'forensic-capture', 'clean-restore', 'integrity-verify'],
+                steps: [
+                    { id: 'threat-detect', correct: true, icon: '🚨', title: 'Threat Detection', desc: 'EDR behavioral analysis alert' },
+                    { id: 'network-isolate', correct: true, icon: '🔒', title: 'Network Isolation', desc: 'Automated VLAN quarantine' },
+                    { id: 'forensic-capture', correct: true, icon: '🔬', title: 'Forensic Capture', desc: 'Memory dump and disk snapshot' },
+                    { id: 'clean-restore', correct: true, icon: '💾', title: 'Clean Restore', desc: 'Restore from verified backup' },
+                    { id: 'integrity-verify', correct: true, icon: '✅', title: 'Integrity Verification', desc: 'Hash validation and health check' },
+                    { id: 'pay-ransom', correct: false, icon: '💰', title: 'Pay Ransom Demand', desc: 'No guarantee of data recovery' },
+                    { id: 'reboot-servers', correct: false, icon: '🔄', title: 'Reboot Servers', desc: 'Destroys forensic evidence' },
+                    { id: 'email-helpdesk', correct: false, icon: '📧', title: 'Email IT Help Desk', desc: 'Manual escalation process' },
+                    { id: 'manual-antivirus', correct: false, icon: '🛡️', title: 'Manual Antivirus Scan', desc: 'Too slow for active threat' }
+                ]
+            },
+            9: {
+                title: '📡 Data Exfiltration Detection',
+                subtitle: 'DLP Anomaly Detection & Egress Blocking',
+                description: 'DLP sensors have flagged an anomalous outbound data transfer of <span class="text-rose-400 font-bold">2.3TB</span> from application server <code class="bg-slate-900/60 px-2 py-0.5 rounded text-indigo-400">app-prod-07</code> to an unknown external IP over the past 90 minutes. The transfer pattern suggests automated exfiltration via encrypted HTTPS tunneling.',
+                mission: 'Build an automated data loss prevention workflow that detects the anomaly, analyzes traffic patterns, blocks unauthorized egress, quarantines the compromised endpoint, and captures forensic evidence for investigation.',
+                correctWorkflow: ['anomaly-detect', 'traffic-analysis', 'egress-block', 'endpoint-quarantine', 'forensic-capture'],
+                steps: [
+                    { id: 'anomaly-detect', correct: true, icon: '📡', title: 'Anomaly Detection', desc: 'DLP behavioral analysis alert' },
+                    { id: 'traffic-analysis', correct: true, icon: '🔍', title: 'Traffic Analysis', desc: 'Deep packet inspection and flow analysis' },
+                    { id: 'egress-block', correct: true, icon: '🚫', title: 'Egress Block', desc: 'Firewall rule to block exfil destination' },
+                    { id: 'endpoint-quarantine', correct: true, icon: '🔒', title: 'Endpoint Quarantine', desc: 'Isolate compromised server' },
+                    { id: 'forensic-capture', correct: true, icon: '🔬', title: 'Forensic Capture', desc: 'Capture network logs and memory dump' },
+                    { id: 'review-logs-manually', correct: false, icon: '📊', title: 'Manual Log Review', desc: 'Spreadsheet-based log analysis' },
+                    { id: 'email-security', correct: false, icon: '📧', title: 'Email Security Team', desc: 'Manual escalation process' },
+                    { id: 'disable-internet', correct: false, icon: '🌐', title: 'Disable All Internet', desc: 'Causes total service outage' },
+                    { id: 'open-ticket', correct: false, icon: '🎫', title: 'Open Support Ticket', desc: 'Wait for SOC team response' }
                 ]
             }
         };
@@ -1563,6 +1793,63 @@
                     ],
                     manualTotal: '13-23 hours',
                     impact: 'Cloud security automation remediates misconfigurations <span class="text-cyan-400 font-bold">3,600x - 6,360x faster</span> than manual cloud infrastructure audits.'
+                },
+                7: {
+                    automated: [
+                        {label: 'Registry Scan:', value: '~4 seconds'},
+                        {label: 'Image Layer Analysis:', value: '~3 seconds'},
+                        {label: 'Base Image Patch:', value: '~2 seconds'},
+                        {label: 'Container Rebuild:', value: '~5 seconds'},
+                        {label: 'Rolling Redeploy:', value: '~4 seconds'}
+                    ],
+                    automatedTotal: '~18 seconds',
+                    manual: [
+                        {label: 'Registry Audit:', value: '4-8 hours'},
+                        {label: 'Dockerfile Updates:', value: '6-12 hours'},
+                        {label: 'Manual Image Builds:', value: '3-6 hours'},
+                        {label: 'Testing & QA:', value: '4-8 hours'},
+                        {label: 'Staged Deployment:', value: '2-4 hours'}
+                    ],
+                    manualTotal: '19-38 hours',
+                    impact: 'Container automation patches and redeploys <span class="text-cyan-400 font-bold">3,800x - 7,600x faster</span> than manually rebuilding and redeploying container images.'
+                },
+                8: {
+                    automated: [
+                        {label: 'Threat Detection:', value: '~2 seconds'},
+                        {label: 'Network Isolation:', value: '~3 seconds'},
+                        {label: 'Forensic Capture:', value: '~5 seconds'},
+                        {label: 'Clean Restore:', value: '~6 seconds'},
+                        {label: 'Integrity Verification:', value: '~3 seconds'}
+                    ],
+                    automatedTotal: '~19 seconds',
+                    manual: [
+                        {label: 'Threat Identification:', value: '2-6 hours'},
+                        {label: 'Manual Network Isolation:', value: '1-3 hours'},
+                        {label: 'Forensic Investigation:', value: '8-24 hours'},
+                        {label: 'System Restoration:', value: '12-48 hours'},
+                        {label: 'Validation & Reporting:', value: '4-8 hours'}
+                    ],
+                    manualTotal: '27-89 hours',
+                    impact: 'Automated incident response contains ransomware <span class="text-cyan-400 font-bold">5,100x - 16,900x faster</span> than manual investigation and recovery processes.'
+                },
+                9: {
+                    automated: [
+                        {label: 'Anomaly Detection:', value: '~3 seconds'},
+                        {label: 'Traffic Analysis:', value: '~4 seconds'},
+                        {label: 'Egress Block:', value: '~2 seconds'},
+                        {label: 'Endpoint Quarantine:', value: '~3 seconds'},
+                        {label: 'Forensic Capture:', value: '~5 seconds'}
+                    ],
+                    automatedTotal: '~17 seconds',
+                    manual: [
+                        {label: 'Log Analysis & Triage:', value: '4-8 hours'},
+                        {label: 'Traffic Investigation:', value: '6-12 hours'},
+                        {label: 'Firewall Rule Changes:', value: '2-4 hours'},
+                        {label: 'Endpoint Investigation:', value: '4-8 hours'},
+                        {label: 'Evidence Collection:', value: '8-16 hours'}
+                    ],
+                    manualTotal: '24-48 hours',
+                    impact: 'Automated DLP response blocks data exfiltration <span class="text-cyan-400 font-bold">5,100x - 10,200x faster</span> than manual security investigation and containment.'
                 }
             };
 
@@ -1749,12 +2036,75 @@
             document.getElementById('pipeline-title').className = 'text-xs font-bold tracking-widest text-teal-400 mb-4 uppercase';
         }
 
+        function updateContainerStage(stage) {
+            const stageEl = document.getElementById(`container-stage-${stage}`);
+            stageEl.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-600');
+            stageEl.classList.add('bg-red-600', 'border-red-400', 'text-white');
+            stageEl.innerHTML = '✓';
+            if (stage < 6) {
+                setTimeout(() => {
+                    document.getElementById(`container-connector-${stage}`).style.width = '100%';
+                }, 300);
+            }
+        }
+
+        function switchToContainerTimeline() {
+            hideAllTimelines();
+            document.getElementById('timeline-panel').classList.remove('hidden');
+            document.getElementById('timeline-container').classList.remove('hidden');
+            document.getElementById('pipeline-title').innerText = 'Container Remediation Pipeline';
+            document.getElementById('pipeline-title').className = 'text-xs font-bold tracking-widest text-red-400 mb-4 uppercase';
+        }
+
+        function updateRansomwareStage(stage) {
+            const stageEl = document.getElementById(`ransomware-stage-${stage}`);
+            stageEl.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-600');
+            stageEl.classList.add('bg-pink-600', 'border-pink-400', 'text-white');
+            stageEl.innerHTML = '✓';
+            if (stage < 6) {
+                setTimeout(() => {
+                    document.getElementById(`ransomware-connector-${stage}`).style.width = '100%';
+                }, 300);
+            }
+        }
+
+        function switchToRansomwareTimeline() {
+            hideAllTimelines();
+            document.getElementById('timeline-panel').classList.remove('hidden');
+            document.getElementById('timeline-ransomware').classList.remove('hidden');
+            document.getElementById('pipeline-title').innerText = 'Ransomware Response Pipeline';
+            document.getElementById('pipeline-title').className = 'text-xs font-bold tracking-widest text-pink-400 mb-4 uppercase';
+        }
+
+        function updateExfilStage(stage) {
+            const stageEl = document.getElementById(`exfil-stage-${stage}`);
+            stageEl.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-600');
+            stageEl.classList.add('bg-indigo-600', 'border-indigo-400', 'text-white');
+            stageEl.innerHTML = '✓';
+            if (stage < 6) {
+                setTimeout(() => {
+                    document.getElementById(`exfil-connector-${stage}`).style.width = '100%';
+                }, 300);
+            }
+        }
+
+        function switchToExfilTimeline() {
+            hideAllTimelines();
+            document.getElementById('timeline-panel').classList.remove('hidden');
+            document.getElementById('timeline-exfil').classList.remove('hidden');
+            document.getElementById('pipeline-title').innerText = 'Data Exfiltration Response Pipeline';
+            document.getElementById('pipeline-title').className = 'text-xs font-bold tracking-widest text-indigo-400 mb-4 uppercase';
+        }
+
         function hideAllTimelines() {
             document.getElementById('timeline-app').classList.add('hidden');
             document.getElementById('timeline-ansible').classList.add('hidden');
             document.getElementById('timeline-secret').classList.add('hidden');
             document.getElementById('timeline-cert').classList.add('hidden');
             document.getElementById('timeline-cloud').classList.add('hidden');
+            document.getElementById('timeline-container').classList.add('hidden');
+            document.getElementById('timeline-ransomware').classList.add('hidden');
+            document.getElementById('timeline-exfil').classList.add('hidden');
         }
 
         function showAppTimeline() {
@@ -2380,6 +2730,185 @@
             }, 12000);
         }
 
+        function triggerContainerRemediation() {
+            switchToContainerTimeline();
+
+            setTimeout(() => {
+                appendLog("TRIVY", "Initiating container registry scan for CVE-2026-5678...");
+                updateContainerStage(1);
+            }, 800);
+
+            setTimeout(() => {
+                appendLog("TRIVY", "⚠️ 47 images affected - base image node:18-alpine vulnerable");
+                updateMetricsManual(70, 40, 30);
+            }, 1600);
+
+            setTimeout(() => {
+                appendLog("REGISTRY", "Analyzing image layer dependencies across 3 clusters...");
+                updateContainerStage(2);
+            }, 2400);
+
+            setTimeout(() => {
+                appendLog("REGISTRY", "Layer analysis complete: libcurl 7.88.1 in base layer is vulnerable");
+            }, 3600);
+
+            setTimeout(() => {
+                appendLog("DOCKER", "Pulling patched base image node:18-alpine@sha256:a1b2c3...");
+                updateContainerStage(3);
+            }, 4400);
+
+            setTimeout(() => {
+                appendLog("DOCKER", "✓ Patched base image verified - CVE-2026-5678 resolved");
+                updateMetricsManual(85, 25, 18);
+            }, 5600);
+
+            setTimeout(() => {
+                appendLog("CI/CD", "Triggering parallel rebuild of 47 container images...");
+                updateContainerStage(4);
+            }, 6800);
+
+            setTimeout(() => {
+                appendLog("CI/CD", "✓ 47/47 images rebuilt successfully - all security scans passing");
+            }, 8400);
+
+            setTimeout(() => {
+                appendLog("K8S", "Initiating rolling deployment across 3 Kubernetes clusters...");
+                updateContainerStage(5);
+            }, 9600);
+
+            setTimeout(() => {
+                appendLog("K8S", "Cluster us-east-1: 16/16 pods updated ✓");
+            }, 10400);
+
+            setTimeout(() => {
+                appendLog("K8S", "Cluster eu-west-1: 18/18 pods updated ✓");
+            }, 11200);
+
+            setTimeout(() => {
+                appendLog("K8S", "Cluster ap-south-1: 13/13 pods updated ✓");
+                updateMetricsManual(100, 0, 0);
+                updateIncidentStatus('RESOLVED');
+                updateContainerStage(6);
+            }, 12000);
+        }
+
+        function triggerRansomwareContainment() {
+            switchToRansomwareTimeline();
+
+            setTimeout(() => {
+                appendLog("EDR", "🚨 CRITICAL: Ransomware signature detected - LockBit 4.0 variant");
+                updateRansomwareStage(1);
+            }, 800);
+
+            setTimeout(() => {
+                appendLog("EDR", "File encryption activity detected on db-prod-01 (/var/lib/postgresql/)");
+                updateMetricsManual(40, 60, 50);
+            }, 1600);
+
+            setTimeout(() => {
+                appendLog("FIREWALL", "Executing emergency network isolation - quarantining VLAN 42...");
+                updateRansomwareStage(2);
+            }, 2400);
+
+            setTimeout(() => {
+                appendLog("FIREWALL", "✓ db-prod-01 isolated | 3 adjacent hosts quarantined preventively");
+                updateMetricsManual(50, 50, 40);
+            }, 3600);
+
+            setTimeout(() => {
+                appendLog("FORENSIC", "Capturing memory dump from db-prod-01 (32GB RAM)...");
+                updateRansomwareStage(3);
+            }, 4400);
+
+            setTimeout(() => {
+                appendLog("FORENSIC", "✓ Memory dump captured | Disk snapshot preserved for analysis");
+            }, 6000);
+
+            setTimeout(() => {
+                appendLog("FORENSIC", "Lateral movement analysis: C2 beacon detected on 10.0.42.15");
+            }, 7200);
+
+            setTimeout(() => {
+                appendLog("BACKUP", "Initiating restore from last verified clean backup (2h ago)...");
+                updateRansomwareStage(4);
+            }, 8400);
+
+            setTimeout(() => {
+                appendLog("BACKUP", "✓ Database restored from backup snapshot-20260728-0700");
+                updateMetricsManual(80, 20, 15);
+            }, 9600);
+
+            setTimeout(() => {
+                appendLog("VERIFY", "Running file integrity checks against known-good hashes...");
+                updateRansomwareStage(5);
+            }, 10800);
+
+            setTimeout(() => {
+                appendLog("VERIFY", "✓ 142,847 files validated | 0 hash mismatches | System clean");
+                updateMetricsManual(100, 0, 0);
+                updateIncidentStatus('RESOLVED');
+                updateRansomwareStage(6);
+            }, 12000);
+        }
+
+        function triggerExfilDetection() {
+            switchToExfilTimeline();
+
+            setTimeout(() => {
+                appendLog("DLP", "⚠️ Anomalous outbound transfer detected: 2.3TB to 185.143.xx.xx");
+                updateExfilStage(1);
+            }, 800);
+
+            setTimeout(() => {
+                appendLog("DLP", "Transfer rate: 4.2 GB/min via encrypted HTTPS tunnel on port 443");
+                updateMetricsManual(60, 50, 40);
+            }, 1600);
+
+            setTimeout(() => {
+                appendLog("NETFLOW", "Deep packet inspection: TLS fingerprint matches known C2 framework");
+                updateExfilStage(2);
+            }, 2400);
+
+            setTimeout(() => {
+                appendLog("NETFLOW", "Source: app-prod-07 (10.0.12.47) | Dest: 185.143.xx.xx (AS48031)");
+            }, 3600);
+
+            setTimeout(() => {
+                appendLog("FIREWALL", "Deploying emergency egress rule: BLOCK 185.143.xx.xx/24...");
+                updateExfilStage(3);
+            }, 4400);
+
+            setTimeout(() => {
+                appendLog("FIREWALL", "✓ Egress blocked | Connection terminated | 2.3TB transferred before cutoff");
+                updateMetricsManual(75, 35, 25);
+            }, 5600);
+
+            setTimeout(() => {
+                appendLog("EDR", "Quarantining endpoint app-prod-07 - revoking network access...");
+                updateExfilStage(4);
+            }, 6800);
+
+            setTimeout(() => {
+                appendLog("EDR", "✓ app-prod-07 isolated | Process tree captured | 3 suspicious PIDs identified");
+            }, 8000);
+
+            setTimeout(() => {
+                appendLog("FORENSIC", "Capturing memory dump and network flow logs from app-prod-07...");
+                updateExfilStage(5);
+            }, 9200);
+
+            setTimeout(() => {
+                appendLog("FORENSIC", "✓ 32GB memory dump saved | 847MB PCAP captured | Evidence chain preserved");
+            }, 10400);
+
+            setTimeout(() => {
+                appendLog("DLP", "Impact assessment: customer_records.db, api_keys.json identified in transfer");
+                updateMetricsManual(100, 0, 0);
+                updateIncidentStatus('RESOLVED');
+                updateExfilStage(6);
+            }, 12000);
+        }
+
         // ==========================================
         // DEPLOY AGENT FLOW (INJECT #1 PART B - UNBLOCKED)
         // ==========================================
@@ -2529,6 +3058,33 @@
                     <br><br>
                     <strong class="text-teal-400">Workflow Steps:</strong> CSPM Detection → ACL Remediation → Data Classification → Compliance Report → Similar Resource Scan → Preventive Policy Deployment
                 `;
+            } else if (id === 7) {
+                modalIcon.innerText = '🐳';
+                modalTitle.innerText = 'Use Case #7: Container Image Vulnerability';
+                modalSubtitle.innerText = 'Registry CVE Scan & Automated Image Rebuild';
+                modalDescription.innerHTML = `
+                    A critical CVE has been discovered in the node:18-alpine base image. 47 production container images are affected across 3 Kubernetes clusters. The automated workflow will scan the registry, analyze image layers, patch the base image, rebuild all affected containers, and perform a rolling redeploy.
+                    <br><br>
+                    <strong class="text-red-400">Workflow Steps:</strong> Registry Scan → Image Layer Analysis → Base Image Patch → Container Rebuild → Rolling K8s Redeploy → Health Verification
+                `;
+            } else if (id === 8) {
+                modalIcon.innerText = '🛡️';
+                modalTitle.innerText = 'Use Case #8: Ransomware Containment';
+                modalSubtitle.innerText = 'Automated Threat Isolation & Recovery';
+                modalDescription.innerHTML = `
+                    EDR has detected active LockBit 4.0 ransomware on production database server db-prod-01. File encryption is in progress and lateral movement indicators have been found on 3 adjacent hosts. The automated workflow will isolate the threat, capture forensic evidence, restore from clean backups, and verify system integrity.
+                    <br><br>
+                    <strong class="text-pink-400">Workflow Steps:</strong> Threat Detection → Network Isolation → Forensic Capture → Clean Restore → Integrity Verification → Incident Report
+                `;
+            } else if (id === 9) {
+                modalIcon.innerText = '📡';
+                modalTitle.innerText = 'Use Case #9: Data Exfiltration Detection';
+                modalSubtitle.innerText = 'DLP Anomaly Detection & Egress Blocking';
+                modalDescription.innerHTML = `
+                    DLP sensors have detected an anomalous 2.3TB outbound data transfer from app-prod-07 to an unknown external IP via encrypted HTTPS tunneling. The automated workflow will analyze the traffic, block the exfiltration channel, quarantine the compromised endpoint, and capture forensic evidence.
+                    <br><br>
+                    <strong class="text-indigo-400">Workflow Steps:</strong> Anomaly Detection → Traffic Analysis → Egress Block → Endpoint Quarantine → Forensic Capture → Impact Report
+                `;
             }
 
             modal.classList.remove('hidden');
@@ -2656,6 +3212,39 @@
 
                 // Trigger cloud remediation workflow
                 triggerCloudRemediation();
+            } else if (id === 7) {
+                messageHtml = `<div class="bg-red-950/40 border border-red-800/60 p-3 rounded-lg text-xs">
+                    <div class="flex justify-between font-bold text-red-400 mb-1"><span>🐳 CONTAINER VULNERABILITY ALERT</span><span>${timestamp}</span></div>
+                    <p class="text-slate-300 mb-2">Critical CVE-2026-5678 discovered in base image node:18-alpine. 47 production container images affected across 3 Kubernetes clusters. Immediate patching and redeployment required.</p>
+                    <div class="text-[10px] text-red-300 border-t border-red-800 pt-2 mt-2">🐳 Registry: harbor.internal | Base: node:18-alpine | Affected: 47 images / 3 clusters</div>
+                </div>`;
+                appendLog("TRIVY", "Critical CVE-2026-5678 detected in base image node:18-alpine");
+
+                updateIncidentStatus('DETECTING');
+
+                triggerContainerRemediation();
+            } else if (id === 8) {
+                messageHtml = `<div class="bg-pink-950/40 border border-pink-800/60 p-3 rounded-lg text-xs">
+                    <div class="flex justify-between font-bold text-pink-400 mb-1"><span>🛡️ RANSOMWARE ALERT - CRITICAL</span><span>${timestamp}</span></div>
+                    <p class="text-slate-300 mb-2">EDR has detected active LockBit 4.0 ransomware on db-prod-01. File encryption in progress on /var/lib/postgresql/. Lateral movement indicators detected on 3 adjacent hosts in VLAN 42.</p>
+                    <div class="text-[10px] text-pink-300 border-t border-pink-800 pt-2 mt-2">🛡️ Host: db-prod-01 | Threat: LockBit 4.0 | VLAN: 42 | Lateral: 3 hosts at risk</div>
+                </div>`;
+                appendLog("EDR", "🚨 RANSOMWARE DETECTED: LockBit 4.0 on db-prod-01");
+
+                updateIncidentStatus('DETECTING');
+
+                triggerRansomwareContainment();
+            } else if (id === 9) {
+                messageHtml = `<div class="bg-indigo-950/40 border border-indigo-800/60 p-3 rounded-lg text-xs">
+                    <div class="flex justify-between font-bold text-indigo-400 mb-1"><span>📡 DATA EXFILTRATION ALERT</span><span>${timestamp}</span></div>
+                    <p class="text-slate-300 mb-2">DLP sensors detect anomalous outbound transfer: 2.3TB from app-prod-07 to unknown external IP 185.143.xx.xx via encrypted HTTPS tunnel. Transfer ongoing for approximately 90 minutes.</p>
+                    <div class="text-[10px] text-indigo-300 border-t border-indigo-800 pt-2 mt-2">📡 Source: app-prod-07 (10.0.12.47) | Dest: 185.143.xx.xx | Volume: 2.3TB | Duration: ~90min</div>
+                </div>`;
+                appendLog("DLP", "Anomalous outbound data transfer detected from app-prod-07");
+
+                updateIncidentStatus('DETECTING');
+
+                triggerExfilDetection();
             }
 
 
@@ -2854,7 +3443,8 @@
         function showUseCaseSelector() {
             document.getElementById('use-case-selector').classList.remove('hidden');
             document.getElementById('workflow-learning-content').classList.add('hidden');
-            document.getElementById('learning-subtitle').innerText = 'Select your learning challenge';
+            document.getElementById('learning-subtitle').innerText = 'Select your use case';
+            document.getElementById('btn-back-to-challenges').classList.add('hidden');
         }
 
         function selectUseCase(id) {
@@ -2865,6 +3455,7 @@
             document.getElementById('use-case-selector').classList.add('hidden');
             document.getElementById('workflow-learning-content').classList.remove('hidden');
             document.getElementById('learning-subtitle').innerText = `Build the correct automated workflow for Use Case #${id}`;
+            document.getElementById('btn-back-to-challenges').classList.remove('hidden');
 
             // Update scenario description
             const scenarioCard = document.getElementById('scenario-card');
@@ -3053,7 +3644,7 @@
             }
 
             // Update stats
-            document.getElementById('correct-steps').innerText = `${filledSlots}/5`;
+            document.getElementById('correct-steps').innerText = '0/5';
         }
 
         function clearWorkflow() {
@@ -3070,6 +3661,7 @@
                 slot.innerHTML = `<span class="text-slate-600 text-sm">Step ${index + 1}: Drop here</span>`;
             });
             document.getElementById('feedback-panel').classList.add('hidden');
+            document.getElementById('score').innerText = '0%';
             updateWorkflowButtons();
         }
 
@@ -3124,6 +3716,7 @@
             // Update score
             const score = Math.round((correctCount / 5) * 100);
             document.getElementById('score').innerText = `${score}%`;
+            document.getElementById('correct-steps').innerText = `${correctCount}/5`;
 
             // Enable run button if perfect
             if (correctCount === 5) {
