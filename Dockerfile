@@ -30,7 +30,6 @@ COPY --chown=1001:0 index.html ./
 COPY --chown=1001:0 api.php ./
 COPY --chown=1001:0 trigger.html ./
 COPY --chown=1001:0 README.md ./
-COPY --chown=1001:0 workflow ./
 
 # Create tmp directory for API command storage
 RUN mkdir -p /tmp && \
