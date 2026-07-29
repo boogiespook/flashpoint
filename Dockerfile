@@ -47,8 +47,7 @@ USER 1001
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
   CMD curl -f http://localhost:8080/ || exit 1
 
-# Expose port
-EXPOSE 8080
+# Note: EXPOSE 8080 removed here as it is already declared in the base UBI 9 PHP image
 
 # Use PHP built-in server for lightweight deployment
 CMD ["php", "-S", "0.0.0.0:8080", "-t", "/opt/app-root/src"]
